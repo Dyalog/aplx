@@ -27,6 +27,16 @@
 :EndTrap
 ∇
 
+∇r←∆fi y
+⍝ Emulate ⎕FI under APLX
+r←(1+⎕IO)⊃⎕VFI y
+∇         
+
+∇r←∆vi y
+⍝ Emulate ⎕VI under APLX
+r←⎕IO⊃⎕VFI y
+∇                  
+
 ∇ r←env ∆call args;⎕USING
 ⍝ Simulate ⎕CALL in APLX
  'Only .Net supported'⎕SIGNAL 11/⍨'.net'≢env
@@ -73,7 +83,6 @@
          ('∊'deco ⍵)box trim ⎕FMT ∇¨open ⍵       ⍝ Nested array.
      }⍵
  }
-
 
 ∇Z←data ∆export V;file;type;⎕IO
 ⍝ Emulate APLX ⎕export
@@ -196,11 +205,11 @@ Z←⎕UCS 10 ⍝ Emulate APLX ⎕L
  r←,'G<9999-99-99 99.99.99>'⎕FMT 100⊥6⍴⎕TS
 ∇
 
-∇r←MONTHS
+∇r←∆M
  r←↑⍤0⊢'JANUARY' 'FEBRUARY' 'MARCH' 'APRIL' 'MAY' 'JUNE' 'JULY' 'AUGUST' 'SEPTEMBER' 'OCTOBER' 'NOVEMBER' 'DECEMBER'
 ∇
 
-∇r←WEEKDAYS
+∇r←∆W
  r←↑⍤0⊢'SUNDAY' 'MONDAY' 'TUESDAY' 'WEDNESDAY' 'THURSDAY' 'FRIDAY' 'SATURDAY'
 ∇
 
