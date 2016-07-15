@@ -1,6 +1,42 @@
 ﻿:Namespace APLX
 ⍝ Dyalog covers for APLX functionality
 
+∇ Z←V ∆ea P
+⍝Emulate APLX ⎕ea
+     
+:Trap 0
+    Z←⍎P
+:Else
+    Z←⍎V
+:EndTrap
+∇
+
+∇Z←data ∆export V;file;type
+⍝Emulate APLX ⎕export
+ file←1⊃V ⋄ type←2⊃V
+ :If type≡'txt'
+     Z←(data)⎕NPUT file
+ :ElseIf type≡'csv'
+     ∘∘∘
+ :ElseIf type≡'xml'
+ :Else
+     'Unknown file type'
+ :EndIf
+∇
+
+∇ Z←∆import V;file;type
+⍝Emulate APLX ⎕import
+ file←1⊃V ⋄ type←2⊃V
+ :If type≡'txt'
+     Z←1↑⎕NGET file
+ :ElseIf type≡'csv'
+     ∘∘∘
+ :ElseIf type≡'xml'
+ :Else
+     'Unknown file type'
+ :EndIf
+∇
+
 ∇ Z←∆R
 Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
 ∇        
