@@ -1,8 +1,9 @@
 ﻿:Namespace APLX
-⍝ Dyalog covers for APLX functionality
+⍝ Dyalog cover functions for APLX
 
 ⍝ This namespace can be added as is in a workspace or individual items )COPYed.
 ⍝ If the whole workspace is added ⎕PATH should be set to '#.APLX' in order to get at the code.
+⍝ If only items are copied the namespace should be erased if it was brought in whole.
 
 ∆af←{⎕IO←0 ⋄ 0∊1↑0⍴⍵:⎕AV[⍵] ⋄ ⎕AV⍳⍵}
 
@@ -19,7 +20,6 @@
 
 ∇ Z←V ∆ea P
 ⍝ Emulate APLX ⎕ea
-     
 :Trap 0
     Z←⎕RSI[⎕IO]⍎P
 :Else
@@ -44,13 +44,11 @@ r←⎕IO⊃⎕VFI y
  :If 1=≡,args
      r←⍎args
  :Else
-     r←(⍕1⊃args)2⊃args
+     r←(⍎1⊃args)2⊃args
  :EndIf
 ∇
-
-∇r←∆dbr v
- r←1↓(r⍲1⌽r←v∊' ')/v←,' ',v
-∇
+  
+  ∆dbr←{⍺←' ' ⋄ 1↓(r⍲1⌽r←v∊⍺)/v←⍺,⍵}
 
 ∇r←∆lib path;⎕ML;wild;⎕IO
 ⍝ Emulate APLX ⎕LIB 
@@ -63,9 +61,7 @@ r←⎕IO⊃⎕VFI y
 ∇
 
 ∆display←{⎕IO ⎕ML←0                             ⍝ Boxed display of array.
-
      ⍺←1 ⋄ chars←⍺⊃'..''''|-' '┌┐└┘│─'           ⍝ ⍺: 0-clunky, 1-smooth.
-
      tl tr bl br vt hz←chars                     ⍝ Top left, top right, ...
 
      box←{                                       ⍝ Box with type and axes.
@@ -97,26 +93,22 @@ r←⎕IO⊃⎕VFI y
 ∇Z←data ∆export V;file;type;⎕IO
 ⍝ Emulate APLX ⎕export
  ⎕IO←1
- file←1⊃V
- type←819⌶2⊃V ⍝ Lowercase
-
- :Select type
- :Case 'txt'
-     Z←(⊂data) ⎕NPUT file
- :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'
-     Z←(⊂data) ⎕NPUT file type
- :CaseList 'csv' 'tsv'
-     Z←LoadData.SaveTEXT data file (('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
- :Case 'xml'
-     Z←(⎕XML data) ⎕NPUT file 'utf-8'
+ :if 1=≡V ⋄ V←V({(-⊥⍨'.'≠V)↑V}V) ⋄ :endif ⍝ use extension as type if simple string
+ file←1⊃V ⋄ type←819⌶2⊃V
+ :If type≡'txt'
+     Z←(data)⎕NPUT file
+ :ElseIf type≡'csv'
+     ∘∘∘
+ :ElseIf type≡'xml'
  :Else
      'Unknown file type'⎕SIGNAL 11
- :EndSelect
+ :Endif
 ∇
 
 ∇ Z←∆import V;file;type;⎕IO
 ⍝ Emulate APLX ⎕import
- ⎕IO←1
+ ⎕IO←1 
+ :if 1=≡V ⋄ V←V({(-⊥⍨'.'≠V)↑V}V) ⋄ :endif ⍝ use extension as type if simple string
  file←1⊃V
  type←819⌶2⊃V ⍝ Lowercase
 
@@ -213,8 +205,9 @@ Z←⎕UCS 8 ⍝ Emulate APLX ⎕B
 ∇        
 
 ∇ Z←∆C
-Z←⎕UCS ¯1+⍳32 ⍝ Emulate APLX ⎕C
-∇
+⍝ Emulate APLX ⎕C
+Z←⎕UCS ((⍳16)-⎕io)+9484 9488 9492 9496 9472 9474 9532 95009508 9524 9516 27 28 205 30 31 127
+∇        
 
 ∇ Z←∆L
 Z←⎕UCS 10 ⍝ Emulate APLX ⎕L
@@ -243,14 +236,14 @@ Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
  :If V≡''
      Z←('WLA'⍳1↑2⊃'.' ⎕WG 'aplversion')⊃'WINDOWS' 'LINUX' 'UNIX' 'MACOS'
  :Else
-     Z←¯1↓∊(⎕sh V),¨∆R
+     Z←¯1↓∊(⎕sh V),¨⎕ucs 13
  :EndIf
 ∇
 
 ∇ r←la ∆ov ra;src;nl
 ⍝ ⎕OV in APLX
  src←⎕IO⊃⎕NSI
- nl←{⍵.⎕NL⍳9}
+ nl←{⍵.⎕NL⍳10}
  :Select la
  :Case 0
      r←⎕NS src∘,¨↓ra
@@ -471,3 +464,29 @@ Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
 
 :EndNamespace ⍝ LoadData
 :EndNameSpace
+⍝)(!n_data!DanB2!2016 7 16 9 39 49 0
+⍝)(!n_type!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆B!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆C!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆L!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆M!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆R!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆W!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆a!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆at!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆box!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆call!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆ea!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆export!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆fi!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆host!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆import!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆lib!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆nappend!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆nread!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆nreplace!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆nwrite!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆ov!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆ss!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆time!DanB2!2016 7 16 9 39 49 0
+⍝)(!∆vi!DanB2!2016 7 16 9 39 49 0
