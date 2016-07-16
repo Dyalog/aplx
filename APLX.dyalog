@@ -27,6 +27,13 @@
 :EndTrap
 ∇
 
+∇ Z←∆EM
+⍝ Emulate APLX ⎕EM
+
+⎕ML←1 ⋄ Z←↑⎕DM
+∇
+
+
 ∇r←∆fi y
 ⍝ Emulate ⎕FI under APLX
 r←(1+⎕IO)⊃⎕VFI y
