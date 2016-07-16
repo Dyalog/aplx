@@ -5,9 +5,9 @@
 ⍝ If the whole workspace is added ⎕PATH should be set to '#.APLX' in order to get at the code.
 ⍝ If only items are copied the namespace should be erased if it was brought in whole.
 
-∆af←{⎕IO←0 ⋄ 0∊1↑0⍴⍵:⎕AV[⍵] ⋄ ⎕AV⍳⍵}
+∆AF←{⎕IO←0 ⋄ 0∊1↑0⍴⍵:⎕AV[⍵] ⋄ ⎕AV⍳⍵}
 
-∇r←x ∆at y
+∇r←x ∆AT y
 ⍝ Emulate ⎕AT under APLX
  :Select x
  :Case 0  ⍝ valence
@@ -18,7 +18,7 @@
  :EndSelect
 ∇
 
-∇ Z←V ∆ea P
+∇ Z←V ∆EA P
 ⍝ Emulate APLX ⎕ea
 :Trap 0
     Z←⎕RSI[⎕IO]⍎P
@@ -34,17 +34,17 @@
 ∇
 
 
-∇r←∆fi y
+∇r←∆FI y
 ⍝ Emulate ⎕FI under APLX
 r←(1+⎕IO)⊃⎕VFI y
 ∇         
 
-∇r←∆vi y
+∇r←∆VI y
 ⍝ Emulate ⎕VI under APLX
 r←⎕IO⊃⎕VFI y
 ∇                  
 
-∇ r←env ∆call args;⎕USING
+∇ r←env ∆CALL args;⎕USING
 ⍝ Simulate ⎕CALL in APLX
  'Only .Net supported'⎕SIGNAL 11/⍨'.net'≢env
  ⎕USING←''
@@ -55,9 +55,9 @@ r←⎕IO⊃⎕VFI y
  :EndIf
 ∇
   
-  ∆dbr←{⍺←' ' ⋄ 1↓(r⍲1⌽r←v∊⍺)/v←⍺,⍵}
+  ∆DBR←{⍺←' ' ⋄ 1↓(r⍲1⌽r←v∊⍺)/v←⍺,⍵}
 
-∇r←∆lib path;⎕ML;wild;⎕IO
+∇r←∆LIB path;⎕ML;wild;⎕IO
 ⍝ Emulate APLX ⎕LIB 
 ⍝ Extension: allows filtering of terminal node, e.g. ∆lib 'c:\temp\*.csv'
 
@@ -67,7 +67,7 @@ r←⎕IO⊃⎕VFI y
  r←(1+(≢path)-⌊/(⌽path)⍳'/\')↓⍤1⊢r
 ∇
 
-∆display←{⎕IO ⎕ML←0                             ⍝ Boxed display of array.
+∆DISPLAY←{⎕IO ⎕ML←0                             ⍝ Boxed display of array.
      ⍺←1 ⋄ chars←⍺⊃'..''''|-' '┌┐└┘│─'           ⍝ ⍺: 0-clunky, 1-smooth.
      tl tr bl br vt hz←chars                     ⍝ Top left, top right, ...
 
@@ -97,22 +97,28 @@ r←⎕IO⊃⎕VFI y
      }⍵
  }
 
-∇Z←data ∆export V;file;type;⎕IO
+∇Z←data ∆EXPORT V;file;type;⎕IO
 ⍝ Emulate APLX ⎕export
  ⎕IO←1
  :if 1=≡V ⋄ V←V({(-⊥⍨'.'≠V)↑V}V) ⋄ :endif ⍝ use extension as type if simple string
- file←1⊃V ⋄ type←819⌶2⊃V
- :If type≡'txt'
-     Z←(data)⎕NPUT file
- :ElseIf type≡'csv'
-     ∘∘∘
- :ElseIf type≡'xml'
- :Else
-     'Unknown file type'⎕SIGNAL 11
- :Endif
+ file←1⊃V 
+ type←819⌶2⊃V ⍝ Lowercase
+ 
+ :Select type                                                     
+ :Case 'txt'                                                      
+     Z←(⊂data)⎕NPUT file                                          
+ :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'                        
+     Z←(⊂data)⎕NPUT file type                                     
+ :CaseList 'csv' 'tsv'                                            
+     Z←LoadData.SaveTEXT data file(('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
+ :Case 'xml'                                                      
+     Z←(⎕XML data)⎕NPUT file'utf-8'                               
+ :Else                                                            
+     'Unknown file type'⎕SIGNAL 11                                
+ :EndSelect                                                       
 ∇
 
-∇ Z←∆import V;file;type;⎕IO
+∇ Z←∆IMPORT V;file;type;⎕IO
 ⍝ Emulate APLX ⎕import
  ⎕IO←1 
  :if 1=≡V ⋄ V←V({(-⊥⍨'.'≠V)↑V}V) ⋄ :endif ⍝ use extension as type if simple string
@@ -133,7 +139,7 @@ r←⎕IO⊃⎕VFI y
  :EndSelect
 ∇
 
-∇{r}←data ∆nappend arg;tieno;type;conv
+∇{r}←data ∆NAPPEND arg;tieno;type;conv
 ⍝ Emulate APLX ⎕NAPPEND        
 
  (tieno conv)←arg,(≢arg)↓0 ¯1
@@ -143,7 +149,7 @@ r←⎕IO⊃⎕VFI y
  data ⎕NAPPEND tieno type
 ∇                       
 
-∇{r}←data ∆nreplace arg;tieno;type;conv;startbyte
+∇{r}←data ∆NREPLACE arg;tieno;type;conv;startbyte
 ⍝ Emulate APLX ⎕NREPLACE        
 
  (tieno startbyte conv)←arg,(≢arg)↓0 ¯1 0
@@ -153,7 +159,7 @@ r←⎕IO⊃⎕VFI y
  r←data ⎕NREPLACE tieno startbyte type
 ∇
 
-∇{r}←data ∆nwrite arg;tieno;startbyte;type;conv
+∇{r}←data ∆NWRITE arg;tieno;startbyte;type;conv
 ⍝ Emulate APLX ⎕NWRITE        
 
  (tieno conv startbyte)←arg,(≢arg)↓0 0 ¯1
@@ -165,7 +171,7 @@ r←⎕IO⊃⎕VFI y
  :EndIf
 ∇          
                                        
-∇{r}←∆nread arg;startbyte;count;conv;tieno;type;ix
+∇{r}←∆NREAD arg;startbyte;count;conv;tieno;type;ix
 ⍝ Emulate APLX ⎕NREAD
  
  ⎕IO←1
@@ -224,7 +230,7 @@ Z←⎕UCS 10 ⍝ Emulate APLX ⎕L
 Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
 ∇        
 
-∇r←{la}∆box ra;sep;fill;b;max;⎕ML
+∇r←{la}∆BOX ra;sep;fill;b;max;⎕ML
 ⍝ Box a la APLX
  :If 900⌶⍬ ⋄ la←''⍴0⍴ra ⋄ :EndIf
  (sep fill)←2↑la
@@ -238,7 +244,7 @@ Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
 ∇
 
 
-∇ Z←{time}∆host V
+∇ Z←{time}∆HOST V
 ⍝ Emulate the APLX  ⎕host
  :If V≡''
      Z←('WLA'⍳1↑2⊃'.' ⎕WG 'aplversion')⊃'WINDOWS' 'LINUX' 'UNIX' 'MACOS'
@@ -247,7 +253,7 @@ Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
  :EndIf
 ∇
 
-∇ r←la ∆ov ra;src;nl
+∇ r←la ∆OV ra;src;nl
 ⍝ ⎕OV in APLX
  src←⎕IO⊃⎕NSI
  nl←{⍵.⎕NL⍳10}
@@ -261,7 +267,7 @@ Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
  :EndSelect
 ∇
 
-∇ r←{opt}∆ss arg;text;from;to;type;flags;fix;⎕IO;norm;⎕ML;add1;search
+∇ r←{opt}∆SS arg;text;from;to;type;flags;fix;⎕IO;norm;⎕ML;add1;search
 ⍝ Mimic APLX' ⎕ss function
 ⍝ arg is a 2 (search) or 3 (replace) element
  :If 900⌶0 ⋄ opt←0 ⋄ :EndIf  ⍝ simple search
@@ -305,7 +311,7 @@ Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
  :EndIf
 ∇
 
-∇r←∆time
+∇r←∆TIME
  r←,'G<9999-99-99 99.99.99>'⎕FMT 100⊥6⍴⎕TS
 ∇
 
