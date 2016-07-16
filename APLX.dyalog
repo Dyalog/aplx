@@ -101,15 +101,21 @@ r←⎕IO⊃⎕VFI y
 ∇ Z←∆import V;file;type;⎕IO
 ⍝ Emulate APLX ⎕import
  ⎕IO←1
- file←1⊃V ⋄ type←2⊃V
- :If type≡'txt'
-     Z←1↑⎕NGET file
- :ElseIf type≡'csv'
+ file←1⊃V
+ type←819⌶2⊃V ⍝ Lowercase
+
+ :Select type
+ :Case 'txt'
+     Z←1⊃⎕NGET file
+ :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'
+     Z←1⊃⎕NGET file type
+ :CaseList 'csv' 'tsv'
+     Z←LoadData.LoadTEXT file (('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
+ :Case 'xml'
      ∘∘∘
- :ElseIf type≡'xml'
  :Else
-     'Unknown file type'
- :EndIf
+     'Unknown file type'⎕SIGNAL 11
+ :EndSelect
 ∇
 
 ∇ Z←∆R
@@ -212,5 +218,94 @@ Z←⎕UCS 10 ⍝ Emulate APLX ⎕L
 ∇r←∆W
  r←↑⍤0⊢'SUNDAY' 'MONDAY' 'TUESDAY' 'WEDNESDAY' 'THURSDAY' 'FRIDAY' 'SATURDAY'
 ∇
+ 
+:Namespace LoadData
+⍝ Functions copied from distributed workspace LoadData.dws
 
+∇data←LoadTEXT params;file;string;cr;Quote;tmp;sep;⎕ML;⎕IO;vi;Sep;fget;nested;filename;specialchars;NL;CR;cols;num;header;rows;ncol;lCase;criteria;if;isChar;n;csv;text
+⍝ Load data from a TEXT file                                   danb 2008
+
+⍝ Arguments are:  Filename [SpecialChars [SelectionCriteria]]
+⍝ Selection criteria is made in the form
+⍝ ('Column' or 'Row' followed by a series of numbers or column heading)
+⍝ Example:
+⍝   LoadTEXT '\temp\myfile.csv' ';' ('columns' 'name,age,telephone')  ⍝ CSV file using ';' as delimiter
+⍝   LoadTEXT '\temp\myfile.txt' (12 5 6 256) ('rows' (2×⍳999))        ⍝ keep every 2nd row of fixed fields width file
+
+⍝ This version assumes the data is delimited by a specific character (default comma)
+⍝ and that string that includes the separator is surrounded by quotes (default ")
+⍝ It will complain if anything seems out of order.
+
+ if←/⍨                                ⍝ --- local fns ---
+ isChar←{0 2∊⍨10|⎕DR 1/⍵}
+ lCase←{n←⍴l←'abcdefghijklmnopqrstuvwxyz' ⋄ ⎕IO←0 ⋄ ~∨/b←n>i←⎕A⍳s←⍵:⍵ ⋄ (b/s)←l[b/i] ⋄ s}
+
+ ⎕IO←⎕ML←1 ⋄ (NL CR)←⎕TC[2 3]         ⍝ --- local variables ---
+ params←,{⊂⍣(1∊≡,⍵)⌷⍵}params ⍝ nest if only a filename (string) as argument
+
+ :If ∨/nested←1<|≡¨params
+    ⍝ Each criteria must be a 2 element nested array
+     ⎕SIGNAL 5 if 2∨.≠↑⍴¨tmp←nested/params
+     criteria←lCase∘⊃¨tmp
+     ⎕SIGNAL 11 if~∧/criteria∊'columns' 'rows'  ⍝ only accept these
+    ⍝ If a character column specification is supplied we assume there is a header
+     header←isChar 2⊃(criteria⍳⊂'columns')⊃tmp,⊂0 0
+ :Else
+     criteria←⍴header←0
+ :EndIf
+
+ (filename specialchars)←2↑(~nested)/params
+ data←0 0⍴0
+
+⍝ This version assumes v15.0 or later:
+ fget←{z←⎕NGET ⍵ ⋄ (-≢3⊃z)↓1⊃z}
+
+ :If ~0∊⍴string←fget filename
+    ⍝ There can be 3 types of line delimiter: NL, CR, CR+LF
+    ⍝ CR,NL and lone NLs will be turned into CRs
+     string←CR,(~CR NL⍷string)/string
+     ((string=NL)/string)←CR
+     cr←CR=string                         ⍝ line delimiters
+     :If csv←isChar specialchars          ⍝ fixed field or CSV?
+         (Sep Quote)←',"'{(⍴⍺)↑⍵,(⍴⍵)↓⍺}specialchars~' '
+         text←≠\string=Quote              ⍝ string
+         cr←cr>text
+         sep←cr∨text<string=Sep           ⍝ items separator
+     :Else
+         tmp←(+/specialchars)⍴0 ⋄ tmp[+\specialchars]←1
+         sep←∊(⍴¨cr⊂cr)↑¨⊂1 0,tmp         ⍝ first field has NL
+         text←0 ⋄ Quote←''                ⍝ no text or quotes to remove
+     :EndIf
+    ⍝ Take care of doubled quotes
+     data←{¯1↑q←⍵∊Quote:¯1↓⍵/⍨q⍲≠\q ⋄ ⍵}¨↑(sep/cr)⊂(sep/cr∨csv)↓¨sep⊂string
+    ⍝ We know there is at least ONE row
+     tmp←↑(sep/cr)⊂1∊¨sep⊂text            ⍝ Quote used?
+    ⍝ Columns of numbers are to be returned as such
+     :If ∨/cols←~∧⌿tmp                    ⍝ columns that don't use quotes
+         num←(⊂,1)≡∘⊃¨tmp←⎕VFI¨cols/data  ⍝ all the numeric items
+         :If header<∨/ncol←∧⌿num          ⍝ do we have full length columns of numbers?
+             rows←1                       ⍝ then change all rows
+         :Else
+             header∨←n←∨/ncol←∧⌿1 0↓num   ⍝ maybe if we remove the first line
+             rows←0,1↓(⊃⍴data)⍴n
+         :EndIf
+         (rows⌿ncol/cols/data)←2 1∘⊃¨rows⌿ncol/tmp
+     :EndIf
+ :EndIf
+
+ ⍝ Take care of constraints
+ :If 0<⍴criteria
+     :If ∨/tmp←'columns'∘≡¨criteria
+         :If ' '∊1↑0⍴cols←2⊃(tmp⍳1)⊃nested/params
+             cols←(lCase¨data[1;])⍳1↓¨(tmp=',')⊂tmp←',',cols
+         :EndIf
+         data←data[;cols]
+     :EndIf
+     :If ∨/tmp←'rows'∘≡¨criteria
+         rows←header+2⊃(tmp⍳1)⊃nested/params ⍝ row numbers start at 1; header does not count
+         data←data[(rows≤1↑⍴data)/rows;]     ⍝ keep valid rows only
+     :EndIf
+ :EndIf
+∇
+:EndNamespace
 :EndNameSpace
