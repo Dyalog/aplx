@@ -52,11 +52,14 @@ r←⎕IO⊃⎕VFI y
  r←1↓(r⍲1⌽r←v∊' ')/v←,' ',v
 ∇
 
-∇r←∆lib path;⎕ML;wild 
-⍝ Emulate APLX ⎕LIB
- ⎕ML←2
+∇r←∆lib path;⎕ML;wild;⎕IO
+⍝ Emulate APLX ⎕LIB 
+⍝ Extension: allows filtering of terminal node, e.g. ∆lib 'c:\temp\*.csv'
+
+ ⎕ML←1 ⋄ ⎕IO←1
  wild←'*'∊path
- r←(≢path)↓⍤1⊃⊃(⎕NINFO⍠1)path,((wild∨(¯1↑path)∊'/\')↓'/'),wild↓'*'
+ r←↑↑(⎕NINFO⍠1)path,((wild∨(¯1↑path)∊'/\')↓'/'),wild↓'*'
+ r←(1+(≢path)-⌊/(⌽path)⍳'/\')↓⍤1⊢r
 ∇
 
 ∆display←{⎕IO ⎕ML←0                             ⍝ Boxed display of array.
@@ -119,7 +122,7 @@ r←⎕IO⊃⎕VFI y
  :CaseList 'csv' 'tsv'
      Z←LoadData.LoadTEXT file (('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
  :Case 'xml'
-     ∘∘∘
+     Z←⎕XML 1⊃⎕NGET file
  :Else
      'Unknown file type'⎕SIGNAL 11
  :EndSelect
@@ -251,7 +254,7 @@ Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
 :Namespace LoadData
 ⍝ Functions copied from distributed workspace LoadData.dws
 
-∇data←LoadTEXT params;file;string;cr;Quote;tmp;sep;⎕ML;⎕IO;vi;Sep;fget;nested;filename;specialchars;NL;CR;cols;num;header;rows;ncol;lCase;criteria;if;isChar;n;csv;text
+∇data←LoadTEXT params;file;string;cr;Quote;tmp;sep;⎕ML;⎕IO;vi;Sep;fget;nested;filename;specialchars;NL;CR;cols;header;rows;ncol;lCase;criteria;if;isChar;n;csv;text;num
 ⍝ Load data from a TEXT file                                   danb 2008
 
 ⍝ Arguments are:  Filename [SpecialChars [SelectionCriteria]]
@@ -310,8 +313,10 @@ Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
     ⍝ We know there is at least ONE row
      tmp←↑(sep/cr)⊂1∊¨sep⊂text            ⍝ Quote used?
     ⍝ Columns of numbers are to be returned as such
-     :If ∨/cols←~∧⌿tmp                    ⍝ columns that don't use quotes
-         num←(⊂,1)≡∘⊃¨tmp←⎕VFI¨cols/data  ⍝ all the numeric items
+     :If ∨/cols←~∧⌿tmp                    ⍝ columns that don't use quotes   
+         num←cols/data
+         (∊num)←{w←⍵ ⋄ ((w='-')/w)←'¯' ⋄ w}∊num ⍝ treat - as ¯
+         num←(⊂,1)≡∘⊃¨tmp←⎕VFI¨num        ⍝ all the numeric items
          :If header<∨/ncol←∧⌿num          ⍝ do we have full length columns of numbers?
              rows←1                       ⍝ then change all rows
          :Else
