@@ -52,6 +52,13 @@ r←⎕IO⊃⎕VFI y
  r←1↓(r⍲1⌽r←v∊' ')/v←,' ',v
 ∇
 
+∇r←∆lib path;⎕ML;wild 
+⍝ Emulate APLX ⎕LIB
+ ⎕ML←2
+ wild←'*'∊path
+ r←(≢path)↓⍤1⊃⊃(⎕NINFO⍠1)path,((wild∨(¯1↑path)∊'/\')↓'/'),wild↓'*'
+∇
+
 ∆display←{⎕IO ⎕ML←0                             ⍝ Boxed display of array.
 
      ⍺←1 ⋄ chars←⍺⊃'..''''|-' '┌┐└┘│─'           ⍝ ⍺: 0-clunky, 1-smooth.
@@ -118,12 +125,33 @@ r←⎕IO⊃⎕VFI y
  :EndSelect
 ∇
 
-∇ Z←∆R
-Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
+∇ Z←∆a
+Z←'abcdefghijklmnopqrstuvwxyz' ⍝ Emulate APLX ⎕a
+∇             
+    
+∇ Z←∆A
+Z←'ABCDEFGHIJKLMNOPQRSTUVWXYZ' ⍝ Emulate APLX ⎕A
+∇             
+
+∇ Z←∆B
+Z←⎕UCS 8 ⍝ Emulate APLX ⎕B
 ∇        
+
+∇ Z←∆C
+Z←⎕UCS ¯1+⍳32 ⍝ Emulate APLX ⎕C
+∇        
+
+∇ Z←∆D
+Z←'0123456789' ⍝ Emulate APLX ⎕D
+∇        
+
 
 ∇ Z←∆L
 Z←⎕UCS 10 ⍝ Emulate APLX ⎕L
+∇             
+
+∇ Z←∆R
+Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
 ∇        
 
 ∇r←{la}∆box ra;sep;fill;b;max;⎕ML
@@ -217,7 +245,8 @@ Z←⎕UCS 10 ⍝ Emulate APLX ⎕L
 
 ∇r←∆W
  r←↑⍤0⊢'SUNDAY' 'MONDAY' 'TUESDAY' 'WEDNESDAY' 'THURSDAY' 'FRIDAY' 'SATURDAY'
-∇
+∇         
+
  
 :Namespace LoadData
 ⍝ Functions copied from distributed workspace LoadData.dws
