@@ -97,15 +97,21 @@ r←⎕IO⊃⎕VFI y
 ∇Z←data ∆export V;file;type;⎕IO
 ⍝ Emulate APLX ⎕export
  ⎕IO←1
- file←1⊃V ⋄ type←2⊃V
- :If type≡'txt'
-     Z←(data)⎕NPUT file
- :ElseIf type≡'csv'
-     ∘∘∘
- :ElseIf type≡'xml'
+ file←1⊃V
+ type←819⌶2⊃V ⍝ Lowercase
+
+ :Select type
+ :Case 'txt'
+     Z←(⊂data) ⎕NPUT file
+ :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'
+     Z←(⊂data) ⎕NPUT file type
+ :CaseList 'csv' 'tsv'
+     Z←LoadData.SaveTEXT data file (('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
+ :Case 'xml'
+     Z←(⎕XML data) ⎕NPUT file 'utf-8'
  :Else
-     'Unknown file type'
- :EndIf
+     'Unknown file type'⎕SIGNAL 11
+ :EndSelect
 ∇
 
 ∇ Z←∆import V;file;type;⎕IO
@@ -128,26 +134,87 @@ r←⎕IO⊃⎕VFI y
  :EndSelect
 ∇
 
+∇{r}←data ∆nappend arg;tieno;type;conv
+⍝ Emulate APLX ⎕NAPPEND        
+
+ (tieno conv)←arg,(≢arg)↓0 ¯1
+ type←n_type conv
+ data←data n_data conv  
+  
+ data ⎕NAPPEND tieno type
+∇                       
+
+∇{r}←data ∆nreplace arg;tieno;type;conv;startbyte
+⍝ Emulate APLX ⎕NREPLACE        
+
+ (tieno startbyte conv)←arg,(≢arg)↓0 ¯1 0
+ type←n_type conv
+ data←data n_data conv  
+
+ r←data ⎕NREPLACE tieno startbyte type
+∇
+
+∇{r}←data ∆nwrite arg;tieno;startbyte;type;conv
+⍝ Emulate APLX ⎕NWRITE        
+
+ (tieno conv startbyte)←arg,(≢arg)↓0 0 ¯1
+ type←n_type conv
+ data←data n_data conv  
+  
+ :If startbyte=¯2 ⋄ r←data ⎕NAPPEND tieno type
+ :Else ⋄ r←data ⎕NREPLACE tieno startbyte type
+ :EndIf
+∇          
+                                       
+∇{r}←∆nread arg;startbyte;count;conv;tieno;type;ix
+⍝ Emulate APLX ⎕NREAD
+ 
+ ⎕IO←1
+ (tieno conv count startbyte)←arg,(≢arg)↓0 0 ¯1 ⍬
+ type←n_type conv                                 
+ :If count≠¯1 
+    r←⎕NREAD tieno conv count,startbyte
+ :Else ⍝ read to end  
+    'Read to end not supported in Dyalog APL (yet)' ⎕SIGNAL 11 
+ :EndIf        
+        
+ :If 3≠ix←5 8⍳conv
+    r←(ix⊃'UTF-8' 'UTF-16') ⎕UCS ⎕UCS r 
+ :EndIf    
+∇
+
+∇ type←n_type conv;⎕IO;ix
+⍝ Convert APLX native file conversion codes
+
+ ⎕IO←1    
+ :If conv∊11 82 163 323 645
+     type←conv
+ :Else
+     type←(10⌊1+conv)⊃82 81 323 645 80 80 325 ¯1 80 ¯1
+     'Unsupported conversion type' ⎕SIGNAL (type=1)/11
+ :EndIf 
+∇
+
+∇data←data n_data conv;ix
+⍝ Convert data for native file write
+
+ ⎕IO←1
+ :If 3≠ix←5 8⍳conv
+    data←⎕UCS (ix⊃'UTF-8' 'UTF-16') ⎕UCS data 
+ :EndIf                     
+∇
+
 ∇ Z←∆a
 Z←'abcdefghijklmnopqrstuvwxyz' ⍝ Emulate APLX ⎕a
 ∇             
     
-∇ Z←∆A
-Z←'ABCDEFGHIJKLMNOPQRSTUVWXYZ' ⍝ Emulate APLX ⎕A
-∇             
-
 ∇ Z←∆B
 Z←⎕UCS 8 ⍝ Emulate APLX ⎕B
 ∇        
 
 ∇ Z←∆C
 Z←⎕UCS ¯1+⍳32 ⍝ Emulate APLX ⎕C
-∇        
-
-∇ Z←∆D
-Z←'0123456789' ⍝ Emulate APLX ⎕D
-∇        
-
+∇
 
 ∇ Z←∆L
 Z←⎕UCS 10 ⍝ Emulate APLX ⎕L
@@ -341,5 +408,66 @@ Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
      :EndIf
  :EndIf
 ∇
-:EndNamespace
+
+∇rc←{options}SaveTEXT params;file;⎕ML;⎕IO;NL;CR;lCase;if;isChar;CRLF;LF;data;fdel;rdel;stream;sz;tie;win;Q
+⍝ Save data to a TEXT file                                   danb 2008 V1.1
+
+⍝ Arguments are:  Data Filename [Separators]
+⍝ The default separators is ',' CRLF (for Windows, NL for Unix)
+⍝ If the separator is found in the data it is enclosed in '"', therefore '"' must NOT appear in the data.
+⍝ If a fixed length is instead given for each column then any character may exist in the data.
+⍝ It will complain if anything seems out of order.
+
+⍝ The options are: 0 (default): create new file, 1:overwrite if necessary
+⍝ The function returns 0 if all went well or a return code (1=file exists)
+
+⍝ Example:
+⍝   SaveTEXT data '\temp\myfile.csv' ';'           ⍝ CSV file using ';' as delimiter
+⍝   SaveTEXT data '\temp\myfile.txt' ',' LF        ⍝ , delimited file using LF as record delimiter
+⍝   SaveTEXT data '\temp\myfile.wxyz' (23 32 21)   ⍝ fixed width delimited file using CRLF as record delimiter
+⍝   SaveTEXT data '\temp\myfile.wxyz' (3 9 8) 133  ⍝ fixed width delimited file using #133 as record delimiter
+
+ if←/⍨                       ⍝ --- local fns ---
+ isChar←{0 2∊⍨10|⎕DR 1/⍵}
+ lCase←{n←⍴l←'abcdefghijklmnopqrstuvwxyz' ⋄ ⎕IO←0 ⋄ ~∨/b←n>i←⎕A⍳s←⍵:⍵ ⋄ (b/s)←l[b/i] ⋄ s}
+
+ ⎕IO←⎕ML←1                   ⍝ --- local variables ---
+ win←'W'∊⊃⊃'.'⎕WG'aplversion'
+ (CR LF)←CRLF←⎕UCS(~win)↓13 10 ⋄ Q←'"'
+ (data file fdel rdel)←params,(⍴params)↓0 0 ','CRLF ⍝ 4 arguments
+
+ :If 0∊⍴data
+     stream←''
+ :Else ⍝ something to do
+     :If isChar fdel
+         data←{∨/(fdel,Q)∊⍵:Q,((1+Q=⍵)/⍵),Q ⋄ ⍵}¨⍕¨data ⍝ add double quotes around
+         data←1↓¨,/fdel,¨data
+     :Else
+         sz←⍴data←(¯2↑1,⍴data)⍴data ⍝ ensure matrix
+         fdel←fdel×¯1*~isChar¨data[⊃sz;] ⍝ better be all the same
+         data←,/(sz⍴fdel)↑¨data
+     :EndIf
+    ⍝ If the record separator is numeric we turn it into text
+     :If ~isChar rdel ⋄ rdel←⎕UCS rdel ⋄ :EndIf
+     stream←(⍴,rdel)↓∊rdel∘,¨data
+ :EndIf
+
+⍝ This version does without .Net
+ rc←1
+ :Trap 22
+     :If 0=⎕NC'options' ⋄ options←0 ⋄ :EndIf
+     :If 1∊options
+         {22:: ⋄ ⍵ ⎕NERASE ⍵ ⎕NTIE 0}file
+     :EndIf
+     tie←file ⎕NCREATE 0   ⍝ the file must NOT exist
+⍝ Change the stream into UTF-8 format
+     stream←¯17 ¯69 ¯65,{⍵-256×127<⍵}'UTF-8'⎕UCS stream
+⍝ Write out
+     stream ⎕NAPPEND tie 83
+     ⎕NUNTIE tie
+     rc←0
+ :EndTrap
+ ∇
+
+:EndNamespace ⍝ LoadData
 :EndNameSpace
