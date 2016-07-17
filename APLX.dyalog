@@ -197,21 +197,23 @@ r←⎕IO⊃⎕VFI y
  :EndIf
 ∇          
                                        
-∇{r}←∆NREAD arg;startbyte;count;conv;tieno;type;ix
+∇r←∆NREAD arg;startbyte;count;conv;tieno;type;ix
 ⍝ Emulate APLX ⎕NREAD
  
  ⎕IO←1
  (tieno conv count startbyte)←arg,(≢arg)↓0 0 ¯1 ⍬
  type←n_type conv                                 
  :If count≠¯1 
-    r←⎕NREAD tieno conv count,startbyte
+    r←⎕NREAD tieno type count,startbyte
  :Else ⍝ read to end  
     'Read to end not supported in Dyalog APL (yet)' ⎕SIGNAL 11 
  :EndIf        
         
- :If 3≠ix←5 8⍳conv
-    r←(ix⊃'UTF-8' 'UTF-16') ⎕UCS ⎕UCS r 
- :EndIf    
+ :Select conv
+ :Case 0 ⋄ r←∆av[1+⎕UCS r]
+ :Case 5 ⋄ r←'UTF-8'⎕UCS ⎕UCS r
+ :Case 8 ⋄ r←'UTF-16'⎕UCS ⎕UCS r
+ :EndSelect   
 ∇
 
 ∇ type←n_type conv;⎕IO;ix
@@ -221,7 +223,7 @@ r←⎕IO⊃⎕VFI y
  :If conv∊11 82 163 323 645
      type←conv
  :Else
-     type←(10⌊1+conv)⊃82 81 323 645 80 80 325 ¯1 80 ¯1
+     type←(10⌊1+conv)⊃80 81 323 645 80 80 325 ¯1 80 ¯1
      'Unsupported conversion type' ⎕SIGNAL (type=1)/11
  :EndIf 
 ∇
@@ -230,9 +232,11 @@ r←⎕IO⊃⎕VFI y
 ⍝ Convert data for native file write
 
  ⎕IO←1
- :If 3≠ix←5 8⍳conv
-    data←⎕UCS (ix⊃'UTF-8' 'UTF-16') ⎕UCS data 
- :EndIf                     
+ :Select conv
+ :Case 0 ⋄ data←⎕UCS ¯1+∆av⍳data
+ :Case 5 ⋄ data←⎕UCS 'UTF-16' ⎕UCS data 
+ :Case 8 ⋄ data←⎕UCS 'UTF-8' ⎕UCS data 
+ :EndSelect          
 ∇
 
 ∇ Z←∆a

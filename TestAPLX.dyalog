@@ -2,31 +2,35 @@
 
 :Namespace TestAPLX
 
-∇Run;⎕IO;⎕ML;folder
+∇Run;⎕IO;⎕ML;folder;⎕PATH;z
 ⍝ Test the APLX emulation functions
- ⎕IO←1 ⋄ ⎕ML←1
+ ⎕IO←1 ⋄ ⎕ML←1           
+ ⎕PATH←'#.APLX'
 
  folder←{(1-⌊/(⌽⍵)⍳'\/')↓⍵}{⊃⍵[⍵[;1]⍳⎕THIS;4]}↑5177⌶⍬
  
- ⍝/// ∆af and ∆at not tested; they don't work
+ assert ∆a≡⎕UCS 96+⍳26  
+ assert 105086=+/⎕UCS  ∆C  
+ assert 241=≢∪∆AV 
+ assert 225 97 65≡∆AF 'aA⍺'
 
- assert #.APLX.∆a≡⎕UCS 96+⍳26  
- assert 105086=+/⎕UCS  #.APLX.∆C
+ assert 4≡'42' ∆EA '2+2'
+ assert 42≡'42' ∆EA '1÷0'
 
- assert 4≡'42' #.APLX.∆EA '2+2'
- assert 42≡'42' #.APLX.∆EA '1÷0'
-
- assert (↑⎕DM)≡#.APLX.∆EM
+ assert (↑⎕DM)≡∆EM
  
- assert 1 0 1≡#.APLX.∆VI'1 E 2'
- assert 1 0 2≡#.APLX.∆FI'1 E 2'
-
- ⍝ /// no test for ∆call - don't know a good test
+ assert 1 0 1≡∆VI'1 E 2'
+ assert 1 0 2≡∆FI'1 E 2'
  
- assert 'A B C'≡#.APLX.∆DBR'  A  B  C '
- assert 1∊'TestAPLX.dyalog'⍷#.APLX.∆LIB folder
+ assert 'A B C'≡∆DBR'  A  B  C '
+ assert 1∊'TestAPLX.dyalog'⍷∆LIB folder
 
- assert 3 1≡+/'→∊'∘.=,#.APLX.∆DISPLAY (1 2 3)'ABC'
+ assert 3 1≡+/'→∊'∘.=,∆DISPLAY (1 2 3)'ABC'
+ 
+ :If 0≠≢z←{(~1∊¨⍵⍷¨⊂⎕VR 'Run')/⍵}'∆' #.APLX.⎕NL ¯3
+     ⎕←(≢z),' functions untested:'
+     ⎕←z
+ :EndIf
 
  ⎕←'APLX tests completed'
 ∇
