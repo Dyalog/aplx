@@ -5,12 +5,38 @@
 ⍝ If the whole workspace is added ⎕PATH should be set to '#.APLX' in order to get at the code.
 ⍝ If only items are copied the namespace should be erased if it was brought in whole.
 
-∆AF←{⎕IO←0 ⋄ 0∊1↑0⍴⍵:⎕AV[⍵] ⋄ ⎕AV⍳⍵}
+⍝ ⎕AV, based on ⎕UCS ⎕AV in APLX
+⍝ Note that SOME control characters (1 2 3 4 5 6 8 10 13) are repeated 
+⍝ in the 2nd half of ⎕AV, and SPACE appears 7x at (0 32 128 222 223 224 254)
+∆av ←  32    1    2    3    4    5    6 9040    8 9047   10 9031 9032   13 9073 9074
+∆av,←9042 9035 9021 9033 8854 9055 9014 9067 9038 9045 9024 9023 9053 9054   33 9017
+∆av,←  32  168   41   60 8804   61   62   93 8744   94 8800  247   44   43   46   47
+∆av,←  48   49   50   51   52   53   54   55   56   57   40   91   59  215   58   92
+∆av,← 175 9082 8869 8745 8970 8714   95 8711  123 9075 8728   39 9109  124 8868 9675
+∆av,←  42   63 9076 8968  126 8595 8746 9077 8835 8593 8834 8592 8866 8594 8805   45
+∆av,←8900   65   66   67   68   69   70   71   72   73   74   75   76   77   78   79
+∆av,←  80   81   82   83   84   85   86   87   88   89   90 8710 8867 9066   36  125
+∆av,←  32    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15
+∆av,←9484 9488 9492 9496 9472 9474 9532 9500 9508 9524 9516   27   28  205   30   31
+∆av,←  34   35   37   38   64  163   96 8801 8802 9079 9080 9019 9026 9060 9061 9015
+∆av,← 196  197  199  201  209  214  220  225  224  226  228  227  229  231  233  232
+∆av,← 234  235  237  236  238  239  241  243  242  244  246  245  250  249  251  252
+∆av,← 192  195  213  338  339  198  230 9068  216  248  191  161  223  255   32   32
+∆av,←  32   97   98   99  100  101  102  103  104  105  106  107  108  109  110  111
+∆av,← 112  113  114  115  116  117  118  119  120  121  122 9049  200 8364   32  127      
+∆av←⎕UCS ∆av
+
+∆AF←{⎕IO←0 ⋄ 0∊1↑0⍴⍵:∆av[⍵] ⋄ ∆av⍳⍵}
+
+∇r←∆AV
+⍝ Emulate APLX ⎕AV: Note that it does not have 256 distinct elements
+r←∆av
+∇
 
 ∇r←x ∆AT y
 ⍝ Emulate ⎕AT under APLX
  :Select x
- :Case 0  ⍝ valence
+ :Case 0  ⍝ valence 
  :Case 1  ⍝ timestamp
  :Case 2  ⍝ properties
  :Case 3  ⍝ size
