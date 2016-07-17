@@ -18,11 +18,14 @@
  
  text←'⍋⍒'
  text ∆EXPORT filename'utf8'
- assert 226 141 139 226 141 146≡n_get 'c:\devt\aplx\aplxtest.dat'
+ assert 226 141 139 226 141 146≡⎕UCS n_get 'c:\devt\aplx\aplxtest.dat'
  assert text≡∆IMPORT filename 'UTF-8'
  
- assert text≡∆IMPORT filename 'txt'
- 
+ data←{⍵⍪-⌿⍵}2 4⍴11300 13220 16550 19230, 12450 12950 13620 13980
+ data←'' 'Q1' 'Q2' 'Q3' 'Q4'⍪'Sales' 'Expenses' 'Profit',data
+ data ∆EXPORT filename 'csv'
+ assert data≡∆IMPORT filename 'csv'
+  
  ⎕NDELETE filename
 
  assert ∆a≡⎕UCS 96+⍳26

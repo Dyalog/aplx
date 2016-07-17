@@ -162,7 +162,7 @@ r←⎕IO⊃⎕VFI y
  :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16' 
      type←(1+'6'=¯1↑type)⊃'UTF-8' 'UTF-16'
      Z←n_get file
-     Z←⎕UCS type ⎕UCS Z
+     Z←type ⎕UCS ⎕UCS Z
  :CaseList 'csv' 'tsv'
      Z←LoadData.LoadTEXT file (('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
  :Case 'xml'
@@ -412,7 +412,7 @@ Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
  data←0 0⍴0
 
 ⍝ This version assumes v15.0 or later:
- fget←{z←⎕NGET ⍵ ⋄ (-≢3⊃z)↓1⊃z}
+ fget←{z←¯1↓1⊃⎕NGET ⍵}
 
  :If ~0∊⍴string←fget filename
     ⍝ There can be 3 types of line delimiter: NL, CR, CR+LF
