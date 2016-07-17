@@ -130,21 +130,26 @@ r←⎕IO⊃⎕VFI y
  file←1⊃V 
  type←819⌶2⊃V ⍝ Lowercase
  
+ :If ⎕NEXISTS file ⋄ ⎕NDELETE file ⋄ :EndIf
+
  :Select type                                                     
  :Case 'txt'                                                      
-     Z←(⊂data)⎕NPUT file                                          
- :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'                        
-     Z←(⊂data)⎕NPUT file type                                     
+     Z←data n_put file                                          
+ :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'
+     type←(1+'6'=¯1↑type)⊃'UTF-8' 'UTF-16'
+     data←⎕UCS type ⎕UCS data                        
+     Z←data n_put file                                     
  :CaseList 'csv' 'tsv'                                            
      Z←LoadData.SaveTEXT data file(('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
  :Case 'xml'                                                      
      Z←(⎕XML data)⎕NPUT file'utf-8'                               
  :Else                                                            
      'Unknown file type'⎕SIGNAL 11                                
- :EndSelect                                                       
+ :EndSelect 
+ Z←0 0⍴0                                                      
 ∇
 
-∇ Z←∆IMPORT V;file;type;⎕IO
+∇ Z←∆IMPORT V;file;type;⎕IO;tn
 ⍝ Emulate APLX ⎕import
  ⎕IO←1 
  :if 1=≡V ⋄ V←V({(-⊥⍨'.'≠V)↑V}V) ⋄ :endif ⍝ use extension as type if simple string
@@ -152,14 +157,16 @@ r←⎕IO⊃⎕VFI y
  type←819⌶2⊃V ⍝ Lowercase
 
  :Select type
- :Case 'txt'
-     Z←1⊃⎕NGET file
- :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'
-     Z←1⊃⎕NGET file type
+ :Case 'txt'                 
+     Z←n_get file 
+ :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16' 
+     type←(1+'6'=¯1↑type)⊃'UTF-8' 'UTF-16'
+     Z←n_get file
+     Z←⎕UCS type ⎕UCS Z
  :CaseList 'csv' 'tsv'
      Z←LoadData.LoadTEXT file (('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
  :Case 'xml'
-     Z←⎕XML 1⊃⎕NGET file
+     Z←⎕XML 1⊃⎕NGET file 'UTF-8'
  :Else
      'Unknown file type'⎕SIGNAL 11
  :EndSelect
@@ -238,6 +245,18 @@ r←⎕IO⊃⎕VFI y
  :Case 8 ⋄ data←⎕UCS 'UTF-8' ⎕UCS data 
  :EndSelect          
 ∇
+
+∇r←n_get filename;tn
+ tn←filename ⎕NTIE 0
+ r←⎕NREAD tn 80(⎕NSIZE tn)0
+ ⎕NUNTIE tn
+∇  
+
+∇r←data n_put filename;tn
+ tn←filename ⎕NCREATE 0
+ r←data ⎕NAPPEND tn 80
+ ⎕NUNTIE tn
+∇  
 
 ∇ Z←∆a
 Z←'abcdefghijklmnopqrstuvwxyz' ⍝ Emulate APLX ⎕a
@@ -533,3 +552,4 @@ Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
 ⍝)(!∆ss!DanB2!2016 7 16 9 39 49 0
 ⍝)(!∆time!DanB2!2016 7 16 9 39 49 0
 ⍝)(!∆vi!DanB2!2016 7 16 9 39 49 0
+
