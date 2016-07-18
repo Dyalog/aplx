@@ -44,29 +44,6 @@
       Z←⎕UCS 8 
     ∇
 
-    ∇ Z←∆C ⍝ Emulate APLX ⎕C
-      Z←⎕UCS 32 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 9484 9488 9492 9496 9472 9474 9532 9500 9508 9524 9516 27 28 205 30 31 127
-    ∇ 
-    
-    ∇Z←∆DR data ⍝ ⎕DR in APLX
-       →0/⍨Z←1 2 3 4 0[1 3 5 0⍳10|⎕dr data]
-       Z←5 6 7[9.1 2.1⍳⎕nc⊂'data']
-    ∇
-
-    ∇ Z←V ∆EA P
-⍝ Emulate APLX ⎕ea
-      Z←⍬
-      :Trap 0
-          :Trap 85
-              Z←⎕RSI[⎕IO].{0(85⌶)⍵}P
-          :EndTrap
-      :Else
-          :Trap 85
-              Z←⎕RSI[⎕IO].{0(85⌶)⍵}V
-          :EndTrap
-      :EndTrap
-    ∇
-
     ∇ r←{la}∆BOX ra;sep;fill;b;max;⎕ML
 ⍝ ⎕Box in APLX
       :If 900⌶⍬ ⋄ la←''⍴0⍴ra ⋄ :EndIf
@@ -80,6 +57,10 @@
       :EndIf
     ∇
 
+    ∇ Z←∆C ⍝ Emulate APLX ⎕C
+      Z←⎕UCS 32 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 9484 9488 9492 9496 9472 9474 9532 9500 9508 9524 9516 27 28 205 30 31 127
+    ∇ 
+    
     ∇ r←env ∆CALL args;⎕USING
 ⍝ Simulate ⎕CALL in APLX
       'Only .Net supported'⎕SIGNAL 11/⍨'.net'≢env
@@ -89,6 +70,11 @@
       :Else
           r←(⍎1⊃args)2⊃args
       :EndIf
+    ∇
+
+    ∇Z←∆DR data ⍝ ⎕DR in APLX
+       →0/⍨Z←1 2 3 4 0[1 3 5 0⍳10|⎕dr data]
+       Z←5 6 7[9.1 2.1⍳⎕nc⊂'data']
     ∇
 
     ∆DBR←{⍺←' ' ⋄ 1↓(r⍲1⌽r←v∊⍺)/v←⍺,⍵}
@@ -122,6 +108,20 @@
               ('∊'deco ⍵)box trim ⎕FMT ∇¨open ⍵       ⍝ Nested array.
           }⍵
       }
+
+    ∇ Z←V ∆EA P
+⍝ Emulate APLX ⎕ea
+      Z←⍬
+      :Trap 0
+          :Trap 85
+              Z←⎕RSI[⎕IO].{0(85⌶)⍵}P
+          :EndTrap
+      :Else
+          :Trap 85
+              Z←⎕RSI[⎕IO].{0(85⌶)⍵}V
+          :EndTrap
+      :EndTrap
+    ∇
 
     ∇ Z←∆EM
 ⍝ Emulate APLX ⎕EM
@@ -214,19 +214,6 @@
     ∇ r←∆M
       r←↑⍤0⊢'JANUARY' 'FEBRUARY' 'MARCH' 'APRIL' 'MAY' 'JUNE' 'JULY' 'AUGUST' 'SEPTEMBER' 'OCTOBER' 'NOVEMBER' 'DECEMBER'
     ∇
-    ∇ r←la ∆OV ra;src;nl
-⍝ ⎕OV in APLX
-      src←⎕IO⊃⎕NSI
-      nl←{⍵.⎕NL⍳10}
-      :Select la
-      :Case 0
-          r←⎕NS(src,'.')∘,¨↓ra
-      :CaseList 2 1
-          src ⎕NS ra ⋄ r←nl ra
-      :Case 3
-          r←nl ra
-      :EndSelect
-    ∇
 
     ∇ {r}←data ∆NAPPEND arg;tieno;type;conv
 ⍝ Emulate APLX ⎕NAPPEND
@@ -277,6 +264,20 @@
       :If startbyte=¯2 ⋄ r←data ⎕NAPPEND tieno type
       :Else ⋄ r←data ⎕NREPLACE tieno startbyte type
       :EndIf
+    ∇
+
+    ∇ r←la ∆OV ra;src;nl
+⍝ ⎕OV in APLX
+      src←⎕IO⊃⎕NSI
+      nl←{⍵.⎕NL⍳10}
+      :Select la
+      :Case 0
+          r←⎕NS(src,'.')∘,¨↓ra
+      :CaseList 2 1
+          src ⎕NS ra ⋄ r←nl ra
+      :Case 3
+          r←nl ra
+      :EndSelect
     ∇
 
     ∇ Z←∆R
