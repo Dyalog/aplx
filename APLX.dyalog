@@ -40,10 +40,15 @@
 
     ∇ Z←V ∆EA P
 ⍝ Emulate APLX ⎕ea
+      Z←⍬
       :Trap 0
-          Z←⎕RSI[⎕IO]⍎P
+          :Trap 85
+              Z←⎕RSI[⎕IO].{0(85⌶)⍵}P
+          :EndTrap
       :Else
-          Z←⎕RSI[⎕IO]⍎V
+          :Trap 85
+              Z←⎕RSI[⎕IO].{0(85⌶)⍵}V
+          :EndTrap
       :EndTrap
     ∇
 
@@ -264,10 +269,15 @@
 
     ∇ Z←∆C ⍝ Emulate APLX ⎕C
       Z←⎕UCS 32 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 9484 9488 9492 9496 9472 9474 9532 9500 9508 9524 9516 27 28 205 30 31 127
-    ∇
+    ∇ 
     
+    ∇Z←∆DR data ⍝ ⎕DR in APLX
+       →0/⍨Z←1 2 3 4 0[1 3 5 0⍳10|⎕dr data]
+       Z←5 6 7[9.1 2.1⍳⎕nc⊂'data']
+    ∇
+
     ∇ Z←∆I ⍝ ⎕I (Idle) in APLX
-      Z←⎕ucs 1
+      Z←⎕UCS 1
     ∇
 
     ∇ Z←∆L
@@ -306,7 +316,7 @@
       nl←{⍵.⎕NL⍳10}
       :Select la
       :Case 0
-          r←⎕NS (src,'.')∘,¨↓ra
+          r←⎕NS(src,'.')∘,¨↓ra
       :CaseList 2 1
           src ⎕NS ra ⋄ r←nl ra
       :Case 3
@@ -342,9 +352,9 @@
           flags←⌽(9⍴2)⊤flags        ⍝ case insensitive?
           fix←fix ⎕OPT(0⊃flags)
           fix←fix ⎕OPT'ML'(1⊃flags) ⍝ stop after 1st
-      :If search
-          fix←fix ⎕OPT'OM'(2⊃flags) ⍝ advance by 1?
-       :endif
+          :If search
+              fix←fix ⎕OPT'OM'(2⊃flags) ⍝ advance by 1?
+          :EndIf
           fix←fix ⎕OPT'Mode'(0⊃flags[3]⌽'LM') ⍝ Line or Mixed mode?
       :AndIf 1=1↑type
           fix←fix ⎕OPT'DotAll'(4⊃flags) ⍝ . matches all?
@@ -355,10 +365,10 @@
       r←↑fix text
 ⍝ We need to adjust for the caller's ⎕IO
       :If search
-          :If ⎕this=1⍴⎕RSI ⋄ io←1↑3⊃⎕STATE'⎕io'
+          :If ⎕THIS=1⍴⎕RSI ⋄ io←1↑3⊃⎕STATE'⎕io'
           :Else ⋄ io←⎕RSI[1].⎕IO
           :EndIf
-     r←r+(⍴r)⍴add1∧io
+          r←r+(⍴r)⍴add1∧io
       :EndIf
     ∇
 
@@ -527,4 +537,10 @@
         ∇
 
     :EndNamespace ⍝ LoadData
+    
+    ⍝ Things to watch for:
+    ⍝ ⊣ is {6::z←0 0⍴0 ⋄ ⍺}
+    ⍝ ⎕CL is (⍬⍴⎕lc)
+    ⍝ ⎕CLASSES is (⎕nl-9.4 9.6)
+
 :EndNameSpace
