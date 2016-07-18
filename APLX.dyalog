@@ -1,9 +1,13 @@
 ﻿:Namespace APLX
-⍝ Dyalog cover functions for APLX
+⍝ Dyalog cover functions for APLX  V1.1
 
 ⍝ This namespace can be added as is in a workspace or individual items )COPYed.
 ⍝ If the whole workspace is added ⎕PATH should be set to '#.APLX' in order to get at the code.
 ⍝ If only items are copied the namespace should be erased if it was brought in whole.
+
+    ∇ Z←∆a    ⍝ Emulate APLX ⎕a
+      Z←'abcdefghijklmnopqrstuvwxyz' 
+    ∇
 
 ⍝ ⎕AV, based on ⎕UCS ⎕AV in APLX
 ⍝ Note that SOME control characters (1 2 3 4 5 6 8 10 13) are repeated
@@ -28,14 +32,25 @@
 
     ∆AF←{⎕IO←0 ⋄ 0∊1↑0⍴⍵:∆av[⍵] ⋄ ∆av⍳⍵}
 
-    ∇ r←∆AI
-⍝ ⎕AI in APLX
+    ∇ r←∆AI ⍝ ⎕AI in APLX
       r←7↑r+1000×4↑0=1↑r←⎕AI
     ∇
 
-    ∇ r←∆AV
-⍝ Emulate APLX ⎕AV: Note that it does not have 256 distinct elements
+    ∇ r←∆AV ⍝ Emulate APLX ⎕AV: Note that it does not have 256 distinct elements
       r←∆av
+    ∇
+
+    ∇ Z←∆B  ⍝ Emulate APLX ⎕B
+      Z←⎕UCS 8 
+    ∇
+
+    ∇ Z←∆C ⍝ Emulate APLX ⎕C
+      Z←⎕UCS 32 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 9484 9488 9492 9496 9472 9474 9532 9500 9508 9524 9516 27 28 205 30 31 127
+    ∇ 
+    
+    ∇Z←∆DR data ⍝ ⎕DR in APLX
+       →0/⍨Z←1 2 3 4 0[1 3 5 0⍳10|⎕dr data]
+       Z←5 6 7[9.1 2.1⍳⎕nc⊂'data']
     ∇
 
     ∇ Z←V ∆EA P
@@ -52,20 +67,17 @@
       :EndTrap
     ∇
 
-    ∇ Z←∆EM
-⍝ Emulate APLX ⎕EM
-      ⎕ML←1 ⋄ Z←↑⎕DM
-    ∇
-
-
-    ∇ r←∆FI y
-⍝ Emulate ⎕FI under APLX
-      r←(1+⎕IO)⊃⎕VFI y
-    ∇
-
-    ∇ r←∆VI y
-⍝ Emulate ⎕VI under APLX
-      r←⎕IO⊃⎕VFI y
+    ∇ r←{la}∆BOX ra;sep;fill;b;max;⎕ML
+⍝ ⎕Box in APLX
+      :If 900⌶⍬ ⋄ la←''⍴0⍴ra ⋄ :EndIf
+      (sep fill)←2↑la
+      ⎕ML←0
+      :If 2∊⍴⍴ra ⍝ matrix case
+          b←,1,⌽∨\⌽fill≠ra ⋄ r←1↓b/,sep,ra
+      :Else ⍝ vector case
+          max←⌈/⊃,/⍴¨r←1↓¨(r∊sep)⊂r←sep,ra
+          r←↑max↑¨r,¨⊂max⍴fill
+      :EndIf
     ∇
 
     ∇ r←env ∆CALL args;⎕USING
@@ -80,16 +92,6 @@
     ∇
 
     ∆DBR←{⍺←' ' ⋄ 1↓(r⍲1⌽r←v∊⍺)/v←⍺,⍵}
-
-    ∇ r←∆LIB path;⎕ML;wild;⎕IO
-⍝ Emulate APLX ⎕LIB
-⍝ Extension: allows filtering of terminal node, e.g. ∆lib 'c:\temp\*.csv'
-     
-      ⎕ML←1 ⋄ ⎕IO←1
-      wild←'*'∊path
-      r←↑↑(⎕NINFO⍠1)path,((wild∨(¯1↑path)∊'/\')↓'/'),wild↓'*'
-      r←(1+(≢path)-⌊/(⌽path)⍳'/\')↓⍤1⊢r
-    ∇
 
       ∆DISPLAY←{⎕IO ⎕ML←0                             ⍝ Boxed display of array.
           ⍺←1 ⋄ chars←⍺⊃'..''''|-' '┌┐└┘│─'           ⍝ ⍺: 0-clunky, 1-smooth.
@@ -121,6 +123,11 @@
           }⍵
       }
 
+    ∇ Z←∆EM
+⍝ Emulate APLX ⎕EM
+      ⎕ML←1 ⋄ Z←↑⎕DM
+    ∇
+
     ∇ Z←data ∆EXPORT V;file;type;⎕IO
 ⍝ Emulate APLX ⎕export
       ⎕IO←1
@@ -151,6 +158,23 @@
       Z←0 0⍴0
     ∇
 
+    ∇ r←∆FI y
+⍝ Emulate ⎕FI under APLX
+      r←(1+⎕IO)⊃⎕VFI y
+    ∇
+
+    ∇ Z←{time}∆HOST V ⍝ Emulate the APLX  ⎕host
+      :If V≡''
+          Z←('WLA'⍳1↑2⊃'.'⎕WG'aplversion')⊃'WINDOWS' 'LINUX' 'UNIX' 'MACOS'
+      :Else
+          Z←¯1↓∊(⎕SH V),¨⎕UCS 13
+      :EndIf
+    ∇
+
+    ∇ Z←∆I ⍝ ⎕I (Idle) in APLX
+      Z←⎕UCS 1
+    ∇
+
     ∇ Z←∆IMPORT V;file;type;⎕IO
 ⍝ Emulate APLX ⎕import
       ⎕IO←1
@@ -170,6 +194,37 @@
           Z←⎕XML 1⊃⎕NGET file'UTF-8'
       :Else
           'Unknown file type'⎕SIGNAL 11
+      :EndSelect
+    ∇
+
+    ∇ Z←∆L
+      Z←⎕UCS 10 ⍝ Emulate APLX ⎕L
+    ∇
+
+    ∇ r←∆LIB path;⎕ML;wild;⎕IO
+⍝ Emulate APLX ⎕LIB
+⍝ Extension: allows filtering of terminal node, e.g. ∆lib 'c:\temp\*.csv'
+     
+      ⎕ML←1 ⋄ ⎕IO←1
+      wild←'*'∊path
+      r←↑↑(⎕NINFO⍠1)path,((wild∨(¯1↑path)∊'/\')↓'/'),wild↓'*'
+      r←(1+(≢path)-⌊/(⌽path)⍳'/\')↓⍤1⊢r
+    ∇
+
+    ∇ r←∆M
+      r←↑⍤0⊢'JANUARY' 'FEBRUARY' 'MARCH' 'APRIL' 'MAY' 'JUNE' 'JULY' 'AUGUST' 'SEPTEMBER' 'OCTOBER' 'NOVEMBER' 'DECEMBER'
+    ∇
+    ∇ r←la ∆OV ra;src;nl
+⍝ ⎕OV in APLX
+      src←⎕IO⊃⎕NSI
+      nl←{⍵.⎕NL⍳10}
+      :Select la
+      :Case 0
+          r←⎕NS(src,'.')∘,¨↓ra
+      :CaseList 2 1
+          src ⎕NS ra ⋄ r←nl ra
+      :Case 3
+          r←nl ra
       :EndSelect
     ∇
 
@@ -193,18 +248,6 @@
       r←data ⎕NREPLACE tieno startbyte type
     ∇
 
-    ∇ {r}←data ∆NWRITE arg;tieno;startbyte;type;conv
-⍝ Emulate APLX ⎕NWRITE
-     
-      (tieno conv startbyte)←arg,(≢arg)↓0 0 ¯1
-      type←n_type conv
-      data←data n_data conv
-     
-      :If startbyte=¯2 ⋄ r←data ⎕NAPPEND tieno type
-      :Else ⋄ r←data ⎕NREPLACE tieno startbyte type
-      :EndIf
-    ∇
-
     ∇ r←∆NREAD arg;startbyte;count;conv;tieno;type;ix
 ⍝ Emulate APLX ⎕NREAD
      
@@ -224,104 +267,20 @@
       :EndSelect
     ∇
 
-    ∇ type←n_type conv;⎕IO;ix
-⍝ Convert APLX native file conversion codes
+    ∇ {r}←data ∆NWRITE arg;tieno;startbyte;type;conv
+⍝ Emulate APLX ⎕NWRITE
      
-      ⎕IO←1
-      :If conv∊11 82 163 323 645
-          type←conv
-      :Else
-          type←(10⌊1+conv)⊃80 81 323 645 80 80 325 ¯1 80 ¯1
-          'Unsupported conversion type'⎕SIGNAL(type=1)/11
+      (tieno conv startbyte)←arg,(≢arg)↓0 0 ¯1
+      type←n_type conv
+      data←data n_data conv
+     
+      :If startbyte=¯2 ⋄ r←data ⎕NAPPEND tieno type
+      :Else ⋄ r←data ⎕NREPLACE tieno startbyte type
       :EndIf
-    ∇
-
-    ∇ data←data n_data conv;ix
-⍝ Convert data for native file write
-     
-      ⎕IO←1
-      :Select conv
-      :Case 0 ⋄ data←⎕UCS ¯1+∆av⍳data
-      :Case 5 ⋄ data←⎕UCS'UTF-16'⎕UCS data
-      :Case 8 ⋄ data←⎕UCS'UTF-8'⎕UCS data
-      :EndSelect
-    ∇
-
-    ∇ r←n_get filename;tn
-      tn←filename ⎕NTIE 0
-      r←⎕NREAD tn 80(⎕NSIZE tn)0
-      ⎕NUNTIE tn
-    ∇
-
-    ∇ r←data n_put filename;tn
-      tn←filename ⎕NCREATE 0
-      r←data ⎕NAPPEND tn 80
-      ⎕NUNTIE tn
-    ∇
-
-    ∇ Z←∆a
-      Z←'abcdefghijklmnopqrstuvwxyz' ⍝ Emulate APLX ⎕a
-    ∇
-
-    ∇ Z←∆B
-      Z←⎕UCS 8 ⍝ Emulate APLX ⎕B
-    ∇
-
-    ∇ Z←∆C ⍝ Emulate APLX ⎕C
-      Z←⎕UCS 32 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 9484 9488 9492 9496 9472 9474 9532 9500 9508 9524 9516 27 28 205 30 31 127
-    ∇ 
-    
-    ∇Z←∆DR data ⍝ ⎕DR in APLX
-       →0/⍨Z←1 2 3 4 0[1 3 5 0⍳10|⎕dr data]
-       Z←5 6 7[9.1 2.1⍳⎕nc⊂'data']
-    ∇
-
-    ∇ Z←∆I ⍝ ⎕I (Idle) in APLX
-      Z←⎕UCS 1
-    ∇
-
-    ∇ Z←∆L
-      Z←⎕UCS 10 ⍝ Emulate APLX ⎕L
     ∇
 
     ∇ Z←∆R
       Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
-    ∇
-
-    ∇ r←{la}∆BOX ra;sep;fill;b;max;⎕ML
-⍝ ⎕Box in APLX
-      :If 900⌶⍬ ⋄ la←''⍴0⍴ra ⋄ :EndIf
-      (sep fill)←2↑la
-      ⎕ML←0
-      :If 2∊⍴⍴ra ⍝ matrix case
-          b←,1,⌽∨\⌽fill≠ra ⋄ r←1↓b/,sep,ra
-      :Else ⍝ vector case
-          max←⌈/⊃,/⍴¨r←1↓¨(r∊sep)⊂r←sep,ra
-          r←↑max↑¨r,¨⊂max⍴fill
-      :EndIf
-    ∇
-
-
-    ∇ Z←{time}∆HOST V ⍝ Emulate the APLX  ⎕host
-      :If V≡''
-          Z←('WLA'⍳1↑2⊃'.'⎕WG'aplversion')⊃'WINDOWS' 'LINUX' 'UNIX' 'MACOS'
-      :Else
-          Z←¯1↓∊(⎕SH V),¨⎕UCS 13
-      :EndIf
-    ∇
-
-    ∇ r←la ∆OV ra;src;nl
-⍝ ⎕OV in APLX
-      src←⎕IO⊃⎕NSI
-      nl←{⍵.⎕NL⍳10}
-      :Select la
-      :Case 0
-          r←⎕NS(src,'.')∘,¨↓ra
-      :CaseList 2 1
-          src ⎕NS ra ⋄ r←nl ra
-      :Case 3
-          r←nl ra
-      :EndSelect
     ∇
 
     ∇ r←{opt}∆SS arg;text;from;to;type;flags;fix;⎕IO;norm;⎕ML;add1;search;io
@@ -358,7 +317,7 @@
           fix←fix ⎕OPT'Mode'(0⊃flags[3]⌽'LM') ⍝ Line or Mixed mode?
       :AndIf 1=1↑type
           fix←fix ⎕OPT'DotAll'(4⊃flags) ⍝ . matches all?
-    ⍝ Return all matches for multiple searches are ignored
+         ⍝ Return all matches for multiple searches are ignored
           fix←fix ⎕OPT'EOL'((flags[6 7]⍳1)⊃'CR' 'LF' 'CRLF')
       :EndIf
      
@@ -376,12 +335,48 @@
       r←,'G<9999-99-99 99.99.99>'⎕FMT 100⊥6⍴⎕TS
     ∇
 
-    ∇ r←∆M
-      r←↑⍤0⊢'JANUARY' 'FEBRUARY' 'MARCH' 'APRIL' 'MAY' 'JUNE' 'JULY' 'AUGUST' 'SEPTEMBER' 'OCTOBER' 'NOVEMBER' 'DECEMBER'
+    ∇ r←∆VI y
+⍝ Emulate ⎕VI under APLX
+      r←⎕IO⊃⎕VFI y
     ∇
 
     ∇ r←∆W
       r←↑⍤0⊢'SUNDAY' 'MONDAY' 'TUESDAY' 'WEDNESDAY' 'THURSDAY' 'FRIDAY' 'SATURDAY'
+    ∇
+
+    ∇ type←n_type conv;⎕IO;ix
+⍝ Convert APLX native file conversion codes
+     
+      ⎕IO←1
+      :If conv∊11 82 163 323 645
+          type←conv
+      :Else
+          type←(10⌊1+conv)⊃80 81 323 645 80 80 325 ¯1 80 ¯1
+          'Unsupported conversion type'⎕SIGNAL(type=1)/11
+      :EndIf
+    ∇
+
+    ∇ data←data n_data conv;ix
+⍝ Convert data for native file write
+     
+      ⎕IO←1
+      :Select conv
+      :Case 0 ⋄ data←⎕UCS ¯1+∆av⍳data
+      :Case 5 ⋄ data←⎕UCS'UTF-16'⎕UCS data
+      :Case 8 ⋄ data←⎕UCS'UTF-8'⎕UCS data
+      :EndSelect
+    ∇
+
+    ∇ r←n_get filename;tn
+      tn←filename ⎕NTIE 0
+      r←⎕NREAD tn 80(⎕NSIZE tn)0
+      ⎕NUNTIE tn
+    ∇
+
+    ∇ r←data n_put filename;tn
+      tn←filename ⎕NCREATE 0
+      r←data ⎕NAPPEND tn 80
+      ⎕NUNTIE tn
     ∇
 
 
