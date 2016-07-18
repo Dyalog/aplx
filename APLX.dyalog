@@ -327,7 +327,7 @@
       :EndIf
       type←0,norm↓1    ⍝ return also length for regex
       add1←(⍴type)⍴1 0 ⍝ for ⎕IO adjustment later
-      :If 1=≡from ⋄ from←fix from
+      :If 1=≡,from ⋄ from←fix from
       :Else ⋄ from←fix¨from ⋄ type,←3 ⍝ show pattern number too
           add1,←1
       :EndIf
