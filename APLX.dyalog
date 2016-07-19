@@ -1,12 +1,12 @@
 ﻿:Namespace APLX
-⍝ Dyalog cover functions for APLX  V1.1
+⍝ Dyalog cover functions for APLX  V1.11
 
 ⍝ This namespace can be added as is in a workspace or individual items )COPYed.
 ⍝ If the whole workspace is added ⎕PATH should be set to '#.APLX' in order to get at the code.
 ⍝ If only items are copied the namespace should be erased if it was brought in whole.
 
     ∇ Z←∆a    ⍝ Emulate APLX ⎕a
-      Z←'abcdefghijklmnopqrstuvwxyz' 
+      Z←'abcdefghijklmnopqrstuvwxyz'
     ∇
 
 ⍝ ⎕AV, based on ⎕UCS ⎕AV in APLX
@@ -41,11 +41,11 @@
     ∇
 
     ∇ Z←∆B  ⍝ Emulate APLX ⎕B
-      Z←⎕UCS 8 
+      Z←⎕UCS 8
     ∇
 
     ∇ r←{la}∆BOX ra;sep;fill;b;max;⎕ML
-⍝ ⎕Box in APLX
+    ⍝ ⎕BOX in APLX
       :If 900⌶⍬ ⋄ la←''⍴0⍴ra ⋄ :EndIf
       (sep fill)←2↑la
       ⎕ML←0
@@ -59,10 +59,10 @@
 
     ∇ Z←∆C ⍝ Emulate APLX ⎕C
       Z←⎕UCS 32 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 9484 9488 9492 9496 9472 9474 9532 9500 9508 9524 9516 27 28 205 30 31 127
-    ∇ 
-    
+    ∇
+
     ∇ r←env ∆CALL args;⎕USING
-⍝ Simulate ⎕CALL in APLX
+    ⍝ Simulate ⎕CALL in APLX
       'Only .Net supported'⎕SIGNAL 11/⍨'.net'≢env
       ⎕USING←''
       :If 1=≡,args
@@ -72,9 +72,9 @@
       :EndIf
     ∇
 
-    ∇Z←∆DR data ⍝ ⎕DR in APLX
-       →0/⍨Z←1 2 3 4 0[1 3 5 0⍳10|⎕dr data]
-       Z←5 6 7[9.1 2.1⍳⎕nc⊂'data']
+    ∇ Z←∆DR data ⍝ ⎕DR in APLX
+      →0/⍨Z←1 2 3 4 0[1 3 5 0⍳10|⎕DR data]
+      Z←5 6 7[9.1 2.1⍳⎕NC⊂'data']
     ∇
 
     ∆DBR←{⍺←' ' ⋄ 1↓(r⍲1⌽r←v∊⍺)/v←⍺,⍵}
@@ -109,11 +109,10 @@
           }⍵
       }
 
-    ∇ Z←V ∆EA P
-⍝ Emulate APLX ⎕ea
+    ∇ Z←V ∆EA P ⍝ Emulate APLX ⎕ea
       Z←⍬
       :Trap 0
-          :Trap 85
+          :Trap 85 ⍝ ignore no result
               Z←⎕RSI[⎕IO].{0(85⌶)⍵}P
           :EndTrap
       :Else
@@ -123,15 +122,18 @@
       :EndTrap
     ∇
 
-    ∇ Z←∆EM
-⍝ Emulate APLX ⎕EM
+    ∇ Z←∆EM;⎕ML ⍝ Emulate APLX ⎕EM
       ⎕ML←1 ⋄ Z←↑⎕DM
     ∇
 
+    ∇ Z←∆ERM ⍝ Emulate APLX ⎕ERM
+      Z←¯1↓↑,/⎕DM,¨⎕UCS 13
+    ∇
+
     ∇ Z←data ∆EXPORT V;file;type;⎕IO
-⍝ Emulate APLX ⎕export
+    ⍝ Emulate APLX ⎕export
       ⎕IO←1
-      :If 1=≡V ⋄ V←V({(-⊥⍨'.'≠V)↑V}V) ⋄ :EndIf ⍝ use extension as type if simple string
+      :If 1=≡,V ⋄ V←V({(-⊥⍨'.'≠⍵)↑⍵}V) ⋄ :EndIf ⍝ use extension as type if simple string
       file←1⊃V
       type←819⌶2⊃V ⍝ Lowercase
      
@@ -151,21 +153,20 @@
       :CaseList 'csv' 'tsv'
           Z←LoadData.SaveTEXT data file(('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
       :Case 'xml'
-          Z←(⎕XML data)⎕NPUT file'utf-8'
+          Z←(⊂⎕XML data)⎕NPUT file'utf-8'
       :Else
           'Unknown file type'⎕SIGNAL 11
       :EndSelect
       Z←0 0⍴0
     ∇
 
-    ∇ r←∆FI y
-⍝ Emulate ⎕FI under APLX
+    ∇ r←∆FI y ⍝ Emulate ⎕FI under APLX
       r←(1+⎕IO)⊃⎕VFI y
     ∇
 
-    ∇ Z←{time}∆HOST V ⍝ Emulate the APLX  ⎕host
+    ∇ Z←{time}∆HOST V ⍝ Emulate the APLX  ⎕HOST
       :If V≡''
-          Z←('WLA'⍳1↑2⊃'.'⎕WG'aplversion')⊃'WINDOWS' 'LINUX' 'UNIX' 'MACOS'
+          Z←('WLM'⍳1↑2⊃'.'⎕WG'aplversion')⊃'WINDOWS' 'LINUX' 'MACOS' 'UNIX'
       :Else
           Z←¯1↓∊(⎕SH V),¨⎕UCS 13
       :EndIf
@@ -175,10 +176,9 @@
       Z←⎕UCS 1
     ∇
 
-    ∇ Z←∆IMPORT V;file;type;⎕IO
-⍝ Emulate APLX ⎕import
+    ∇ Z←∆IMPORT V;file;type;⎕IO ⍝ Emulate APLX ⎕import
       ⎕IO←1
-      :If 1=≡V ⋄ V←V({(-⊥⍨'.'≠V)↑V}V) ⋄ :EndIf ⍝ use extension as type if simple string
+      :If 1=≡,V ⋄ V←V({(-⊥⍨'.'≠⍵)↑⍵}V) ⋄ :EndIf ⍝ use extension as type if simple string
       file←1⊃V ⋄ type←819⌶2⊃V ⍝ Lowercase
      
       :Select type
@@ -197,14 +197,12 @@
       :EndSelect
     ∇
 
-    ∇ Z←∆L
-      Z←⎕UCS 10 ⍝ Emulate APLX ⎕L
+    ∇ Z←∆L ⍝ Emulate APLX ⎕L
+      Z←⎕UCS 10
     ∇
 
-    ∇ r←∆LIB path;⎕ML;wild;⎕IO
-⍝ Emulate APLX ⎕LIB
+    ∇ r←∆LIB path;⎕ML;wild;⎕IO ⍝ Emulate APLX ⎕LIB
 ⍝ Extension: allows filtering of terminal node, e.g. ∆lib 'c:\temp\*.csv'
-     
       ⎕ML←1 ⋄ ⎕IO←1
       wild←'*'∊path
       r←↑↑(⎕NINFO⍠1)path,((wild∨(¯1↑path)∊'/\')↓'/'),wild↓'*'
@@ -215,28 +213,35 @@
       r←↑⍤0⊢'JANUARY' 'FEBRUARY' 'MARCH' 'APRIL' 'MAY' 'JUNE' 'JULY' 'AUGUST' 'SEPTEMBER' 'OCTOBER' 'NOVEMBER' 'DECEMBER'
     ∇
 
-    ∇ {r}←data ∆NAPPEND arg;tieno;type;conv
-⍝ Emulate APLX ⎕NAPPEND
-     
-      (tieno conv)←arg,(≢arg)↓0 ¯1
-      type←n_type conv
-      data←data n_data conv
-     
-      data ⎕NAPPEND tieno type
+    ∇ Z←∆N ⍝ ⎕N in APLX
+      Z←⎕UCS 1
     ∇
 
-    ∇ {r}←data ∆NREPLACE arg;tieno;type;conv;startbyte
-⍝ Emulate APLX ⎕NREPLACE
+    ∇ {r}←data ∆NAPPEND arg;tieno;type;conv
+    ⍝ Emulate APLX ⎕NAPPEND
      
-      (tieno startbyte conv)←arg,(≢arg)↓0 ¯1 0
-      type←n_type conv
-      data←data n_data conv
-     
-      r←data ⎕NREPLACE tieno startbyte type
+      (tieno conv)←arg,(≢arg)↓0 0
+      :If conv=0
+          data ⎕NAPPEND tieno
+      :Else
+          type←n_type conv
+          data←data n_data conv
+          data ⎕NAPPEND tieno type
+      :EndIf
+    ∇
+
+    ∇ {file}∆NERASE tieno
+    ⍝ Emulate APLX ⎕NERASE
+      :If 900⌶⍬ ⍝ monadic case?
+          :If 0=tieno←(⎕NNUMS,0)[(~∘' '¨↓⎕NNAMES)⍳⊂file←tieno] ⍝ tied already?
+              tieno←file ⎕NTIE 0
+          :EndIf
+      :EndIf
+      file ⎕NERASE tieno
     ∇
 
     ∇ r←∆NREAD arg;startbyte;count;conv;tieno;type;ix
-⍝ Emulate APLX ⎕NREAD
+    ⍝ Emulate APLX ⎕NREAD
      
       ⎕IO←1
       (tieno conv count startbyte)←arg,(≢arg)↓0 0 ¯1 ⍬
@@ -254,20 +259,33 @@
       :EndSelect
     ∇
 
-    ∇ {r}←data ∆NWRITE arg;tieno;startbyte;type;conv
-⍝ Emulate APLX ⎕NWRITE
+    ∇ {r}←data ∆NREPLACE arg;tieno;type;conv;startbyte
+    ⍝ Emulate APLX ⎕NREPLACE
      
-      (tieno conv startbyte)←arg,(≢arg)↓0 0 ¯1
+      (tieno startbyte conv)←arg,(≢arg)↓0 ¯1 0
       type←n_type conv
       data←data n_data conv
      
-      :If startbyte=¯2 ⋄ r←data ⎕NAPPEND tieno type
-      :Else ⋄ r←data ⎕NREPLACE tieno startbyte type
+      r←data ⎕NREPLACE tieno startbyte type
+    ∇
+
+    ∇ {r}←data ∆NWRITE arg;tieno;startbyte;type;conv
+    ⍝ Emulate APLX ⎕NWRITE
+    ⍝ startbyte=-1 not supported yet
+      :If 1∊⍴,arg ⍝ write as is
+          r←data ⎕NAPPEND tieno
+      :Else
+          (tieno conv startbyte)←arg,(≢arg)↓0 0 ¯1
+          type←n_type conv
+          data←data n_data conv
+     
+          :If startbyte=¯2 ⋄ r←data ⎕NAPPEND tieno type
+          :Else ⋄ r←data ⎕NREPLACE tieno startbyte type
+          :EndIf
       :EndIf
     ∇
 
-    ∇ r←la ∆OV ra;src;nl
-⍝ ⎕OV in APLX
+    ∇ r←la ∆OV ra;src;nl ⍝ ⎕OV in APLX
       src←⎕IO⊃⎕NSI
       nl←{⍵.⎕NL⍳10}
       :Select la
@@ -280,8 +298,8 @@
       :EndSelect
     ∇
 
-    ∇ Z←∆R
-      Z←⎕UCS 13 ⍝ Emulate APLX ⎕R
+    ∇ Z←∆R  ⍝ Emulate APLX ⎕R
+      Z←⎕UCS 13
     ∇
 
     ∇ r←{opt}∆SS arg;text;from;to;type;flags;fix;⎕IO;norm;⎕ML;add1;search;io
@@ -293,7 +311,7 @@
       (text from to)←3↑arg,0
       fix←⊢
       :If norm←type=0  ⍝ turn regex meta char x into \x
-          fix←'{}\.[^|]$(?*)+'∘{pat←⍵ ⋄ r←1+b←⍵∊⍺ ⋄ (pat b)←r∘/¨pat b ⋄ pat⊣((≠\b)/pat)←'\'}
+          fix←'{}[]()\^$|.?*+'∘{(⍵,b/'\')[⍋⍋b←≠\b/⍨1+b←⍵∊⍺]}
       :EndIf
       type←0,norm↓1    ⍝ return also length for regex
       add1←(⍴type)⍴1 0 ⍝ for ⎕IO adjustment later
@@ -323,7 +341,7 @@
       :EndIf
      
       r←↑fix text
-⍝ We need to adjust for the caller's ⎕IO
+    ⍝ We need to adjust for the caller's ⎕IO
       :If search
           :If ⎕THIS=1⍴⎕RSI ⋄ io←1↑3⊃⎕STATE'⎕io'
           :Else ⋄ io←⎕RSI[1].⎕IO
@@ -346,19 +364,19 @@
     ∇
 
     ∇ type←n_type conv;⎕IO;ix
-⍝ Convert APLX native file conversion codes
-     
+    ⍝ Convert APLX native file conversion codes
+    ⍝ conv 325 and 643 (=7) not suppported
       ⎕IO←1
-      :If conv∊11 82 163 323 645
-          type←conv
+      :If conv∊11 82{⍺,⍵,-⍵}163 323 645
+          type←|conv
       :Else
-          type←(10⌊1+conv)⊃80 81 323 645 80 80 325 ¯1 80 ¯1
-          'Unsupported conversion type'⎕SIGNAL(type=1)/11
+          type←(10⌊1+|conv)⊃80 11 323 645 80 80 0 0 80 0
+          'Unsupported conversion type'⎕SIGNAL type↓11
       :EndIf
     ∇
 
     ∇ data←data n_data conv;ix
-⍝ Convert data for native file write
+    ⍝ Convert data for native file write
      
       ⎕IO←1
       :Select conv
@@ -368,10 +386,8 @@
       :EndSelect
     ∇
 
-    ∇ r←n_get filename;tn
-      tn←filename ⎕NTIE 0
-      r←⎕NREAD tn 80(⎕NSIZE tn)0
-      ⎕NUNTIE tn
+    ∇ r←n_get filename
+      r←80 ¯1 ⎕MAP filename
     ∇
 
     ∇ r←data n_put filename;tn
@@ -533,10 +549,13 @@
         ∇
 
     :EndNamespace ⍝ LoadData
-    
+
     ⍝ Things to watch for:
     ⍝ ⊣ is {6::z←0 0⍴0 ⋄ ⍺}
     ⍝ ⎕CL is (⍬⍴⎕lc)
     ⍝ ⎕CLASSES is (⎕nl-9.4 9.6)
+    ⍝ ⎕ERS is 99 ⎕SIGNAL⍨...
+    ⍝ ⎕ERX X is ⎕TRAP←0 'E' ('→',⍕X) with ⎕trap localized
+
 
 :EndNameSpace
