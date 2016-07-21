@@ -3,54 +3,12 @@
 :Namespace TestAPLX
  ⎕PATH←'#.APLX' 
 
-∇Test_Chars
-
- assert ∆a≡⎕UCS 96+⍳26
- assert 105086=+/⎕UCS ∆C
- assert 241=≢∪∆AV
- assert 225 97 65≡∆AF'aA⍺'
-
- assert 8 10 13≡⎕UCS ∆B ∆L ∆R     
-
- assert 'SMTWTFS'≡∆W[;1]
- assert 'JFMAMJJASOND'≡∆M[;1]
-
- assert(2 3⍴'AB CDE')≡∆BOX'AB CDE'
- assert(2 3⍴'AB.CDE')≡'/.'∆BOX'AB/CDE'
-
- assert'A B C'≡∆DBR'  A  B  C '
-
-∇
-
-∇Test_Misc;z;text      
-
- assert 4≡'42'∆EA'2+2⊣∆a'
- assert 42≡'42⊣∆a'∆EA'1÷0'
-
- assert(↑⎕DM)≡∆EM
-
- assert 1 0 1≡∆VI'1 E 2'
- assert 1 0 2≡∆FI'1 E 2'
-
- assert 5 8 14 17≡{(⍵∊'-.')/⍳⍴⍵}∆TIME
-
- assert 3 1≡+/'→∊'∘.=,∆DISPLAY(1 2 3)'ABC' 
- 
- assert 7∊⍴∆AI
-
- assert 14=≢(⍕'.net'∆CALL'System.DateTime.Now')∩⎕D
-
- assert 2≤+/'<DIR>'⍷∆HOST'dir'
- 
- text←'Quack Quack Quack!'
- assert 2∊⍴ns.⎕nl-2 3⊣ns←0 ∆OV +z←↑'assert' 'text' 
- assert z≡3 ∆OV ns
-∇
-
 ∇ {tests} Run DEBUG;⎕IO;⎕ML;FOLDER;fn;fns;z
 ⍝ Test the APLX emulation functions   
 
- ⎕IO←1 ⋄ ⎕ML←1
+ ⎕IO←1 ⋄ ⎕ML←1   
+ ⎕NUNTIE ⎕NNUMS
+ ⎕FUNTIE ⎕FNUMS
 
  FOLDER←{(1-⌊/(⌽⍵)⍳'\/')↓⍵}{⊃⍵[⍵[;1]⍳⎕THIS;4]}↑5177⌶⍬ ⍝ find loaded files' location
 
@@ -67,24 +25,54 @@
  ⎕←'APLX tests completed'
 ∇
 
-∇assert ok
- :If ~ok  
-    ⎕←'*** Assertion failed at ',(2⊃⎕SI),'[',(⍕2⊃⎕LC),']: '
-    ⎕←'   ',(⎕CR 2⊃⎕SI)[1+2⊃⎕LC;]
-    ⎕←' '
-    :If DEBUG ⋄ (1+⎕LC) ⎕STOP 'assert'
-        ⍝ stop here
-    :EndIf
- :EndIf
+∇Test_Chars
+
+ assert ∆a≡⎕UCS 96+⍳26
+ assert 105086=+/⎕UCS ∆C
+ assert 241=≢∪∆AV
+ assert 225 97 65≡∆AF'aA⍺'
+
+ assert 1 8 10 13≡⎕UCS ∆N ∆B ∆L ∆R     
+
+ assert 'SMTWTFS'≡∆W[;1]
+ assert 'JFMAMJJASOND'≡∆M[;1]
+
+ assert(2 3⍴'AB CDE')≡∆BOX'AB CDE'
+ assert(2 3⍴'AB.CDE')≡'/.'∆BOX'AB/CDE'
+
+ assert'A B C'≡∆DBR'  A  B  C '
+
 ∇
 
-expecterror←{
-   0::⎕SIGNAL(⍺≡⊃⎕DMX.DM)↓11
-   z←⍺⍺ ⍵
-   ⎕SIGNAL 11
-}  
+∇Test_Misc;z;text      
 
-∇ Test_Files;filename;text;data
+ assert 4≡'42'∆EA'2+2⊣∆a'
+ assert 42≡'42⊣∆a'∆EA'1÷0'
+
+ assert(↑⎕DM)≡∆EM  
+ assert(¯1↓⊃,/⎕DM,¨⎕UCS 13)≡∆ERM
+
+ assert 1 0 1≡∆VI'1 E 2'
+ assert 1 0 2≡∆FI'1 E 2'
+
+ assert 5 8 14 17≡{(⍵∊'-.')/⍳⍴⍵}∆TIME
+
+ assert 3 1≡+/'→∊'∘.=,∆DISPLAY(1 2 3)'ABC' 
+ 
+ assert 7∊⍴∆AI
+
+ assert 14=≢(⍕'.net'∆CALL'System.DateTime.Now')∩⎕D
+
+ assert 2≤+/'<DIR>'⍷∆HOST'dir'
+ 
+ text←'Quack Quack Quack!'
+ assert 2∊⍴ns.⎕nl-2 3⊣ns←0 ∆OV +z←↑'assert' 'text' 
+ assert z≡3 ∆OV ns   
+ 
+ assert (⍳7)≡∆DR¨ (0 1 0 1) 2 3.14 'A' (⎕NS '') ('A' 1) #
+∇          
+
+∇ Test_ImportExport;filename;text;data
 
  1 ⎕NDELETE filename←FOLDER,'APLXtest.dat'
 
@@ -103,9 +91,28 @@ expecterror←{
  assert data≡∆IMPORT filename 'csv' 
 
  ⎕NDELETE filename
+∇
+
+∇ Test_NFiles;filename;z;tn
+ ⍝ /// Work in Progress 
+
+ 1 ⎕NDELETE filename←FOLDER,'APLXtest.dat'
+ 
+ tn←filename ⎕NCREATE 0
+ ⍝ 'aA⍺0' ∆NAPPEND tn 0    ⍝ Untranslated
+ (8⍴0 1) ∆NAPPEND tn 1   ⍝ Bool
+ 42 ∆NAPPEND tn 2        ⍝ Int32
+ ¯1 ∆NAPPEND tn 3        ⍝ Float64
+ ⍝ 'aA⍺0' ∆NAPPEND tn 4    ⍝ Translated Char
+ ⍝'aA⍺0' ∆NAPPEND tn 5    ⍝ UTF-16
+ ⍝ Skip 6 (Float32)
+ ⍝'aA⍺0' ∆NAPPEND tn 8    ⍝ UTF-8
+ assert z≡z←⎕UCS ⎕NREAD tn 80 (⎕NSIZE tn) 0 
+ ⎕NUNTIE tn
+
+ ⎕NDELETE filename
 
  assert 1∊'TestAPLX.dyalog'⍷∆LIB FOLDER
-
 ∇
 
 ∇ Test_SS;assert;t;MAIL;vtv;⎕IO
@@ -131,6 +138,23 @@ expecterror←{
 
  vtv←'bill.gates@microsoft.com' 'jim@microapl.co.uk'
 ⍝ assert vtv≡t←2 1 ∆SS MAIL'\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b'
-∇          
+∇    
+
+∇assert ok
+ :If ~ok  
+    ⎕←'*** Assertion failed at ',(2⊃⎕SI),'[',(⍕2⊃⎕LC),']: '
+    ⎕←'   ',(⎕CR 2⊃⎕SI)[1+2⊃⎕LC;]
+    ⎕←' '
+    :If DEBUG ⋄ (1+⎕LC) ⎕STOP 'assert'
+        ⍝ stop here
+    :EndIf
+ :EndIf
+∇
+
+expecterror←{
+   0::⎕SIGNAL(⍺≡⊃⎕DMX.DM)↓11
+   z←⍺⍺ ⍵
+   ⎕SIGNAL 11
+}        
       
 :EndNamespace
