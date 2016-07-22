@@ -126,8 +126,20 @@
       ⎕ML←1 ⋄ Z←↑⎕DM
     ∇
 
+    ∆EQ_←{⎕ML←2 ⋄ ⍺←⊢ ⋄ ⍺≡⍵} ⍝ ≡
+
     ∇ Z←∆ERM ⍝ Emulate APLX ⎕ERM
       Z←¯1↓↑,/⎕DM,¨⎕UCS 13
+    ∇
+
+    ∇ r←∆ERX label
+⍝ ⎕ERZ in APLX
+      r←⎕TRAP ⍝ this is not a label
+      :If 0∊1↑0⍴label ⍝ a number?
+          ⎕TRAP←0 'E'('→',⍕label)
+      :Else
+          ⎕TRAP←label ⍝ assume valid ⎕TRAP argument
+      :EndIf
     ∇
 
     ∇ Z←data ∆EXPORT V;file;type;⎕IO
@@ -137,7 +149,7 @@
       file←1⊃V
       type←819⌶2⊃V ⍝ Lowercase
      
-      1 ⎕NDELETE file
+      1⎕NDELETE file
      
       :Select type
       :Case 'txt'
@@ -160,15 +172,71 @@
       Z←0 0⍴0
     ∇
 
+    ∇ r←{la}∆FDROP arg
+⍝ Fdrop in APLX
+      :If 900⌶⍬
+          :If 0=1↓2↑arg
+              ⎕FDROP(1↑arg),¯1 ⋄ r←1
+          :Else
+              .
+          :EndIf
+      :Else
+          .
+      :EndIf
+    ∇
+
+    ∇ {r}←{opt}∆FHOLD fs
+⍝ File resize/hold in APLX
+      :If 900⌶r←⍬
+          (1↓fs)⎕FRESIZE 1↑fs
+      :Else
+          ÷'hold not implemented'
+      :EndIf
+    ∇
+
     ∇ r←∆FI y ⍝ Emulate ⎕FI under APLX
       r←(1+⎕IO)⊃⎕VFI y
     ∇
 
-    ∇ Z←{time}∆HOST V ⍝ Emulate the APLX  ⎕HOST
-      :If V≡''
-          Z←('WLM'⍳1↑2⊃'.'⎕WG'aplversion')⊃'WINDOWS' 'LINUX' 'MACOS' 'UNIX'
+    ∇ r←{opt}∆FREAD arg
+⍝ ⎕← file fn
+⍝ arg is {[LIBRARY]} FILE, COMPONENT {,USER, PASSWORD}
+⍝ we only implement FILE (tie), CPT
+      :If 900⌶⍬
+          :If 0=1↑1↓arg ⋄ arg[1+⎕IO]←¯1+1↑1↓⎕FSIZE 1↑arg ⋄ :EndIf ⍝ 0 cpt= last cpt
+          r←⎕FREAD arg
       :Else
-          Z←¯1↓∊(⎕SH V),¨⎕UCS 13
+          ÷'not implemented'
+      :EndIf
+    ∇
+
+    ∇ {r}←data ∆FWRITE fc;file;cpt
+⍝ File write in APLX
+      r←⍬
+      (file cpt)←fc
+      :If cpt=0
+          data ⎕FAPPEND file
+      :Else
+          data ⎕FREPLACE fc
+      :EndIf
+    ∇
+
+    ∇ r←{env}∆GETCLASS name;⎕USING
+⍝ ⎕GETCLASS in APLX
+      :If 900⌶⍬ ⋄ env←'' ⋄ :EndIf
+      :If '.net'≡env
+          ⎕USING←''
+      :EndIf
+      r←⍎name
+    ∇
+
+    ∇ r←{timeout}∆HOST string
+    ⍝ ⎕HOST in APLX
+    ⍝ timeout feature is not enabled
+      :If ''≡string ⍝ return OS type
+          r←('WLMA'⍳1↑⎕IO⊃'.'⎕WG'aplversion')⊃'WINDOWS' 'LINUX' 'MACOS' 'AIX' '?'
+      :Else
+          r←1↓↑,/(⎕UCS 13),¨⎕SH string~'↑↓' ⍝ always on client
       :EndIf
     ∇
 
@@ -205,12 +273,27 @@
 ⍝ Extension: allows filtering of terminal node, e.g. ∆lib 'c:\temp\*.csv'
       ⎕ML←1 ⋄ ⎕IO←1
       wild←'*'∊path
-      r←↑↑(⎕NINFO⍠1)path,((wild∨(¯1↑path)∊'/\')↓'/'),wild↓'*'
-      r←(1+(≢path)-⌊/(⌽path)⍳'/\')↓⍤1⊢r
+      r←↑↑(⎕NINFO ⍠1)path,((wild∨(¯1↑path)∊'/\')↓'/'),wild↓'*'
+      r←(1+(≢path)-⌊/(⌽path)⍳'/\')↓⍤ 1⊢r
     ∇
 
+    ∆LSHOE←{⍺←⊢ ⋄ ⎕ML←3 ⋄ ⍺⊂⍵} ⍝ ⊂
+
     ∇ r←∆M
-      r←↑⍤0⊢'JANUARY' 'FEBRUARY' 'MARCH' 'APRIL' 'MAY' 'JUNE' 'JULY' 'AUGUST' 'SEPTEMBER' 'OCTOBER' 'NOVEMBER' 'DECEMBER'
+      r←↑⍤ 0⊢'JANUARY' 'FEBRUARY' 'MARCH' 'APRIL' 'MAY' 'JUNE' 'JULY' 'AUGUST' 'SEPTEMBER' 'OCTOBER' 'NOVEMBER' 'DECEMBER'
+    ∇
+
+    ∇ r←∆MOUNT arg;id;sha;shm;max
+⍝ Simulate ⎕MOUNT in APLX
+      :If 0=⎕NC id←'#.APX.⍙MOUNTS' ⋄ ⍎id,'←10 0⍴⎕a' ⋄ :EndIf
+      :If 0∊⍴arg ⋄ r←⍎id
+      :Else
+          sha←⍴arg←(¯2↑1 1,⍴arg)⍴arg
+          max←0 1×sha⌈shm←⍴r←⍎id
+          r←(max⌈shm)↑r
+          r[⍳1↑⍴sha;]←(max⌈sha)↑arg
+          ⍎id,'←r'
+      :EndIf
     ∇
 
     ∇ Z←∆N ⍝ ⎕N in APLX
@@ -290,7 +373,7 @@
       nl←{⍵.⎕NL⍳10}
       :Select la
       :Case 0
-          r←⎕NS(src,'.')∘,¨↓ra
+          r←#.⎕NS(src,'.')∘,¨↓ra
       :CaseList 2 1
           src ⎕NS ra ⋄ r←nl ra
       :Case 3
@@ -301,6 +384,8 @@
     ∇ Z←∆R  ⍝ Emulate APLX ⎕R
       Z←⎕UCS 13
     ∇
+
+    ∆RSHOE←{⍺←⊢ ⋄ ⎕ML←2 ⋄ ⍺⊃⍵} ⍝ ⊃
 
     ∇ r←{opt}∆SS arg;text;from;to;type;flags;fix;⎕IO;norm;⎕ML;add1;search;io
 ⍝ Mimic APLX' ⎕ss function
@@ -354,13 +439,15 @@
       r←,'G<9999-99-99 99.99.99>'⎕FMT 100⊥6⍴⎕TS
     ∇
 
+    ∆UP←{⍺←⊣ ⋄ ⎕ML←2 ⋄ ⍺↑⍵} ⍝ ↑
+
     ∇ r←∆VI y
 ⍝ Emulate ⎕VI under APLX
       r←⎕IO⊃⎕VFI y
     ∇
 
     ∇ r←∆W
-      r←↑⍤0⊢'SUNDAY' 'MONDAY' 'TUESDAY' 'WEDNESDAY' 'THURSDAY' 'FRIDAY' 'SATURDAY'
+      r←↑⍤ 0⊢'SUNDAY' 'MONDAY' 'TUESDAY' 'WEDNESDAY' 'THURSDAY' 'FRIDAY' 'SATURDAY'
     ∇
 
     ∇ type←n_type conv;⎕IO;ix
