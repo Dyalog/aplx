@@ -69,7 +69,28 @@
  assert 2∊⍴ns.⎕nl-2 3⊣ns←0 ∆OV +z←↑'assert' 'text' 
  assert z≡3 ∆OV ns   
  
- assert (⍳7)≡∆DR¨ (0 1 0 1) 2 3.14 'A' (⎕NS '') ('A' 1) #
+ assert (⍳7)≡∆DR¨ (0 1 0 1) 2 3.14 'A' (⎕NS '') ('A' 1) # 
+ 
+ ∆ERX L10 
+ assert ~0∊⍴⎕trap
+ ÷0
+ L10:∆ERX 0
+ assert 0∊⍴⎕trap   
+ 
+ assert 0=∆EQ_ 6
+assert 2=∆EQ_ 'dsa' 3
+assert 'dsa' ∆EQ_'dsa'
+assert (⊂'dsa')≡∆LSHOE'dsa'
+assert 'dsa' 'dsa' ≡1 1 1 0 1 1 1 ∆LSHOE'dsa dsa'
+assert 2≡2 ∆RSHOE 'dsa' 2
+assert (2 3⍴'dsa')≡∆RSHOE 'dsa' 'dsa'
+assert 3≡∆UP 3 4
+assert 1 2≡2 ∆UP ⍳6
+
+assert 0∊⍴∆MOUNT''
+{}∆MOUNT 'dsa'
+assert ((∆MOUNT'')∨.≠' ')≡10↑1
+
 ∇          
 
 ∇ Test_ImportExport;filename;text;data

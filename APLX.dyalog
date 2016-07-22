@@ -132,11 +132,12 @@
       Z←¯1↓↑,/⎕DM,¨⎕UCS 13
     ∇
 
-    ∇ r←∆ERX label
-⍝ ⎕ERZ in APLX
+    ∇ r←∆ERX label ⍝ ⎕ERX in APLX
       r←⎕TRAP ⍝ this is not a label
       :If 0∊1↑0⍴label ⍝ a number?
-          ⎕TRAP←0 'E'('→',⍕label)
+          :If 0∊label ⋄ ⎕TRAP←0⍴⎕TRAP
+          :Else ⋄ ⎕TRAP←0 'E'('→',⍕label)
+          :EndIf
       :Else
           ⎕TRAP←label ⍝ assume valid ⎕TRAP argument
       :EndIf
@@ -149,7 +150,7 @@
       file←1⊃V
       type←819⌶2⊃V ⍝ Lowercase
      
-      1⎕NDELETE file
+      1 ⎕NDELETE file
      
       :Select type
       :Case 'txt'
@@ -273,25 +274,25 @@
 ⍝ Extension: allows filtering of terminal node, e.g. ∆lib 'c:\temp\*.csv'
       ⎕ML←1 ⋄ ⎕IO←1
       wild←'*'∊path
-      r←↑↑(⎕NINFO ⍠1)path,((wild∨(¯1↑path)∊'/\')↓'/'),wild↓'*'
-      r←(1+(≢path)-⌊/(⌽path)⍳'/\')↓⍤ 1⊢r
+      r←↑↑(⎕NINFO⍠1)path,((wild∨(¯1↑path)∊'/\')↓'/'),wild↓'*'
+      r←(1+(≢path)-⌊/(⌽path)⍳'/\')↓⍤1⊢r
     ∇
 
     ∆LSHOE←{⍺←⊢ ⋄ ⎕ML←3 ⋄ ⍺⊂⍵} ⍝ ⊂
 
     ∇ r←∆M
-      r←↑⍤ 0⊢'JANUARY' 'FEBRUARY' 'MARCH' 'APRIL' 'MAY' 'JUNE' 'JULY' 'AUGUST' 'SEPTEMBER' 'OCTOBER' 'NOVEMBER' 'DECEMBER'
+      r←↑⍤0⊢'JANUARY' 'FEBRUARY' 'MARCH' 'APRIL' 'MAY' 'JUNE' 'JULY' 'AUGUST' 'SEPTEMBER' 'OCTOBER' 'NOVEMBER' 'DECEMBER'
     ∇
 
     ∇ r←∆MOUNT arg;id;sha;shm;max
 ⍝ Simulate ⎕MOUNT in APLX
-      :If 0=⎕NC id←'#.APX.⍙MOUNTS' ⋄ ⍎id,'←10 0⍴⎕a' ⋄ :EndIf
+      :If 0=⎕NC id←'#.APLX.⍙MOUNTS' ⋄ ⍎id,'←10 0⍴⎕a' ⋄ :EndIf
       :If 0∊⍴arg ⋄ r←⍎id
       :Else
           sha←⍴arg←(¯2↑1 1,⍴arg)⍴arg
           max←0 1×sha⌈shm←⍴r←⍎id
           r←(max⌈shm)↑r
-          r[⍳1↑⍴sha;]←(max⌈sha)↑arg
+          r[⍳⍴arg]←arg←(max⌈sha)↑arg
           ⍎id,'←r'
       :EndIf
     ∇
@@ -447,7 +448,7 @@
     ∇
 
     ∇ r←∆W
-      r←↑⍤ 0⊢'SUNDAY' 'MONDAY' 'TUESDAY' 'WEDNESDAY' 'THURSDAY' 'FRIDAY' 'SATURDAY'
+      r←↑⍤0⊢'SUNDAY' 'MONDAY' 'TUESDAY' 'WEDNESDAY' 'THURSDAY' 'FRIDAY' 'SATURDAY'
     ∇
 
     ∇ type←n_type conv;⎕IO;ix
@@ -646,3 +647,45 @@
 
 
 :EndNameSpace
+⍝)(!n_data!DanB2!2016 7 22 11 23 28 0
+⍝)(!n_get!DanB2!2016 7 22 11 23 28 0
+⍝)(!n_put!DanB2!2016 7 22 11 23 28 0
+⍝)(!n_type!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆AI!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆AV!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆B!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆BOX!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆C!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆CALL!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆DR!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆EA!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆EM!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆ERM!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆ERX!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆EXPORT!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆FDROP!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆FHOLD!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆FI!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆FREAD!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆FWRITE!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆GETCLASS!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆HOST!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆I!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆IMPORT!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆L!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆LIB!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆M!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆MOUNT!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆N!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆NAPPEND!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆NERASE!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆NREAD!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆NREPLACE!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆NWRITE!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆OV!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆R!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆SS!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆TIME!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆VI!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆W!DanB2!2016 7 22 11 23 28 0
+⍝)(!∆a!DanB2!2016 7 22 11 23 28 0
