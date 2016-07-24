@@ -1,6 +1,6 @@
 ﻿:Require file://./APLX.dyalog
 
-:Namespace TestAPLX
+:Namespace TestAPLX     ⍝ V1.01
  ⎕PATH←'#.APLX' 
 
 ∇ {tests} Run DEBUG;⎕IO;⎕ML;FOLDER;fn;fns;z
@@ -44,7 +44,7 @@
 
 ∇
 
-∇Test_Misc;z;text      
+∇Test_Misc;z;text;new      
 
  assert 4≡'42'∆EA'2+2⊣∆a'
  assert 42≡'42⊣∆a'∆EA'1÷0'
@@ -71,10 +71,10 @@
  
  assert (⍳7)≡∆DR¨ (0 1 0 1) 2 3.14 'A' (⎕NS '') ('A' 1) # 
  
- ∆ERX L10 
+ {}∆ERX L10 
  assert ~0∊⍴⎕trap
  ÷0
- L10:∆ERX 0
+ L10:{}∆ERX 0
  assert 0∊⍴⎕trap   
  
  assert 0=∆EQ_ 6
@@ -87,7 +87,8 @@ assert (2 3⍴'dsa')≡∆RSHOE 'dsa' 'dsa'
 assert 3≡∆UP 3 4
 assert 1 2≡2 ∆UP ⍳6
 
-assert 0∊⍴∆MOUNT''
+new←0=#.APLX.⎕nc'⍙MOUNT'
+assert new≤0∊⍴∆MOUNT'' ⍝ this could be false if tests are run more than once. 'new' solves this
 {}∆MOUNT 'dsa'
 assert ((∆MOUNT'')∨.≠' ')≡10↑1
 
@@ -176,6 +177,18 @@ expecterror←{
    0::⎕SIGNAL(⍺≡⊃⎕DMX.DM)↓11
    z←⍺⍺ ⍵
    ⎕SIGNAL 11
-}        
+}   
+
+⍝ We should provide utilities to detect potential problems.
+⍝ For example ⎕WA← is illegal in Dyalog but not in APLX.
+⍝ A[2] B[3] is fine in APLX but an INDEX error in Dyalog
+
+⍝ The first one can be solved by doing
+
+⍝    ]locate (⎕AI|⎕AV|⎕D|⎕A|⎕EM|⎕B|⎕C|⎕CL|⎕ERM|⎕I|⎕ID|⎕L|⎕LC|⎕LER|⎕M|⎕N|⎕NULL|⎕R|⎕SI|⎕T|⎕TC|⎕THIS|⎕TIME|⎕TS|⎕T|⎕UL|⎕W|⎕WA)← -pat -excl=c -in
+
+⍝ The simple cases of the 2nd one could be
+
+⍝    ]locate  "(⍺\[[ ;0-9]+\]){2,}" -pat -exc=c
       
 :EndNamespace

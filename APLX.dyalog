@@ -133,6 +133,12 @@
     ∇
 
     ∇ r←∆ERX label ⍝ ⎕ERX in APLX
+     ⍝ There are many problems with this program:
+     ⍝ the line # given as arg is where control should be returned
+     ⍝ in the calling program. For that to work ⎕TRAP should be local
+     ⍝ and the trap set to  0 'C' '→nn' NOT  0 'E' '→nn' but
+     ⍝ there is no way to localize ⎕TRAP above so using 'E' MAY
+     ⍝ work but there is no guaranty.
       r←⎕TRAP ⍝ this is not a label
       :If 0∊1↑0⍴label ⍝ a number?
           :If 0∊label ⋄ ⎕TRAP←0⍴⎕TRAP
@@ -647,45 +653,3 @@
 
 
 :EndNameSpace
-⍝)(!n_data!DanB2!2016 7 22 11 23 28 0
-⍝)(!n_get!DanB2!2016 7 22 11 23 28 0
-⍝)(!n_put!DanB2!2016 7 22 11 23 28 0
-⍝)(!n_type!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆AI!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆AV!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆B!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆BOX!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆C!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆CALL!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆DR!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆EA!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆EM!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆ERM!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆ERX!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆EXPORT!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆FDROP!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆FHOLD!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆FI!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆FREAD!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆FWRITE!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆GETCLASS!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆HOST!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆I!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆IMPORT!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆L!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆LIB!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆M!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆MOUNT!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆N!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆NAPPEND!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆NERASE!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆NREAD!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆NREPLACE!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆NWRITE!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆OV!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆R!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆SS!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆TIME!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆VI!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆W!DanB2!2016 7 22 11 23 28 0
-⍝)(!∆a!DanB2!2016 7 22 11 23 28 0
