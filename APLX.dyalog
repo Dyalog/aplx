@@ -30,6 +30,25 @@
     ∆av,← 112  113  114  115  116  117  118  119  120  121  122 9049  200 8364   32  127
     ∆av←⎕UCS ∆av
 
+⍝ ⎕NWRITE conversion code 4 table:     
+    ∆x4 ←  32  32  32  32  32  32  32 210   8 211  10 212 213  13 139 138
+    ∆x4,← 148 147 178 179 180 181 167 162 150 149 153 154 169 171  33 142
+    ∆x4,←  32 168  41  60 136  61  62  93 159  94 172 247  44  43  46  47
+    ∆x4,←  48  49  50  51  52  53  54  55  56  57  40  91  59 215  58  92
+    ∆x4,← 175 184 131 240 152 185  95 146 123 188 176  39 140 124 130 177
+    ∆x4,←  42  63 189 151 126 135 158 190 156 134 155 132 164 133 137  45
+    ∆x4,← 170  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79
+    ∆x4,← 80  81  82  83  84  85  86  87  88  89  90 145 202 174  36 125
+    ∆x4,←   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15
+    ∆x4,← 218 204 192 217 206 219 207 195 221 193 194  27  32 205  32  32
+    ∆x4,←  34  35  37  38  64 163  96 166 187 186 165   0   0 253 246 222
+    ∆x4,← 196 197 199 201 209 214 220 225 224 226 228 227 229 231 233 232
+    ∆x4,← 234 235 237 236 238 239 241 243 242 244 246 245 250 249 251 252
+    ∆x4,← 208 182 183  32  32 198 230 203 216 248 191 161 223 255  32  32
+    ∆x4,←  32  97  98  99 100 101 102 103 104 105 106 107 108 109 110 111
+    ∆x4,← 112 113 114 115 116 117 118 119 120 121 122 254 200 128  32  32
+    ∆x4←⎕UCS ∆x4
+
     ∆AF←{⎕IO←0 ⋄ 0∊1↑0⍴⍵:∆av[⍵] ⋄ ∆av⍳⍵}
 
     ∇ r←∆AI ⍝ ⎕AI in APLX
@@ -311,13 +330,10 @@
     ⍝ Emulate APLX ⎕NAPPEND
      
       (tieno conv)←arg,(≢arg)↓0 0
-      :If conv=0
-          data ⎕NAPPEND tieno
-      :Else
+
           type←n_type conv
           data←data n_data conv
           data ⎕NAPPEND tieno type
-      :EndIf
     ∇
 
     ∇ {file}∆NERASE tieno
@@ -330,22 +346,25 @@
       file ⎕NERASE tieno
     ∇
 
-    ∇ r←∆NREAD arg;startbyte;count;conv;tieno;type;ix
+    ∇ r←∆NREAD arg;startbyte;count;conv;tieno;type;ix;bytes
     ⍝ Emulate APLX ⎕NREAD
      
       ⎕IO←1
       (tieno conv count startbyte)←arg,(≢arg)↓0 0 ¯1 ⍬
       type←n_type conv
+
       :If count≠¯1
-          r←⎕NREAD tieno type count,startbyte
-      :Else ⍝ read to end
-          'Read to end not supported in Dyalog APL (yet)'⎕SIGNAL 11
+          bytes←count×1+(count≠¯1)∧conv=5 ⍝ Double byte count for UTF-16
+          r←⎕NREAD tieno type bytes,startbyte
       :EndIf
      
       :Select conv
       :Case 0 ⋄ r←∆av[1+⎕UCS r]
-      :Case 5 ⋄ r←'UTF-8'⎕UCS ⎕UCS r
-      :Case 8 ⋄ r←'UTF-16'⎕UCS ⎕UCS r
+      :Case 4 ⋄ r←∆av[∆x4⍳r]
+      :Case 5 ⋄ r←⎕UCS 256⊥⍉⌽(count 2)⍴⎕UCS r
+      :Case 8 
+      'Element-counted UTF-8 not supported' ⎕SIGNAL (count≠¯1)/11
+      r←'UTF-8'⎕UCS ⎕UCS r
       :EndSelect
     ∇
 
@@ -475,7 +494,8 @@
       ⎕IO←1
       :Select conv
       :Case 0 ⋄ data←⎕UCS ¯1+∆av⍳data
-      :Case 5 ⋄ data←⎕UCS'UTF-16'⎕UCS data
+      :Case 4 ⋄ data←∆x4[∆av⍳data]
+      :Case 5 ⋄ data←⎕UCS ,⌽⍉256 256⊤'UTF-16'⎕UCS data
       :Case 8 ⋄ data←⎕UCS'UTF-8'⎕UCS data
       :EndSelect
     ∇

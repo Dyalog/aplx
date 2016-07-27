@@ -3,16 +3,27 @@
 :Namespace TestAPLX     ⍝ V1.01
  ⎕PATH←'#.APLX' 
 
-∇ {tests} Run DEBUG;⎕IO;⎕ML;FOLDER;fn;fns;z
+∇ {tests} Run DEBUG;⎕IO;⎕ML;FOLDER;fn;fns;z;m
 ⍝ Test the APLX emulation functions   
 
  ⎕IO←1 ⋄ ⎕ML←1   
  ⎕NUNTIE ⎕NNUMS
  ⎕FUNTIE ⎕FNUMS
+ #.APLX.⎕EX '⍙MOUNTS'
 
  FOLDER←{(1-⌊/(⌽⍵)⍳'\/')↓⍵}{⊃⍵[⍵[;1]⍳⎕THIS;4]}↑5177⌶⍬ ⍝ find loaded files' location
 
- :For fn :In fns←'T' ⎕NL ¯3
+ fns←'T' ⎕NL ¯3 
+ :If 2=⎕NC 'tests'
+    :If (⊂tests)∊'list' '?' ⋄ ⎕←5↓¨fns ⋄ →0 ⋄ :EndIf  
+    tests←'Test_'∘,¨{1=≡⍵:,⊂⍵ ⋄ ⍵},tests
+    :If ∨/m←~tests∊fns
+        ('Unknown test(s): ',,⍕m/tests) ⎕SIGNAL 11
+    :EndIf
+    fns←fns∩tests
+ :EndIf
+
+ :For fn :In fns
      ⍎fn
  :EndFor
 
@@ -44,7 +55,7 @@
 
 ∇
 
-∇Test_Misc;z;text;new      
+∇Test_Errors_Traps;⎕trap
 
  assert 4≡'42'∆EA'2+2⊣∆a'
  assert 42≡'42⊣∆a'∆EA'1÷0'
@@ -101,6 +112,8 @@ assert ((∆MOUNT'')∨.≠' ')≡10↑1
  text←'hello',∆L,'world'
  text ∆EXPORT filename'txt' 
  assert text≡∆IMPORT filename 'txt'
+ text ∆EXPORT filename'txt' 
+ assert text≡∆IMPORT filename 'txt'
  
  text←'⍋⍒'
  text ∆EXPORT filename'utf8'
@@ -115,21 +128,32 @@ assert ((∆MOUNT'')∨.≠' ')≡10↑1
  ⎕NDELETE filename
 ∇
 
-∇ Test_NFiles;filename;z;tn
+∇ Test_NFiles;filename;z;tn;expect;text
  ⍝ /// Work in Progress 
 
  1 ⎕NDELETE filename←FOLDER,'APLXtest.dat'
  
  tn←filename ⎕NCREATE 0
- ⍝ 'aA⍺0' ∆NAPPEND tn 0    ⍝ Untranslated
- (8⍴0 1) ∆NAPPEND tn 1   ⍝ Bool
- 42 ∆NAPPEND tn 2        ⍝ Int32
- ¯1 ∆NAPPEND tn 3        ⍝ Float64
- ⍝ 'aA⍺0' ∆NAPPEND tn 4    ⍝ Translated Char
- ⍝'aA⍺0' ∆NAPPEND tn 5    ⍝ UTF-16
+ expect←⍬
+ text←'aA⍺0'
+ text ∆NAPPEND tn 0 ⋄ expect,←¯1+∆AV⍳text      ⍝ Untranslated
+ assert text≡∆NREAD tn 0 4 0 
+ (8⍴0 1) ∆NAPPEND tn 1 ⋄ expect,←2⊥8⍴0 1       ⍝ Bool
+ assert (8⍴0 1)≡∆NREAD tn 1 8 4
+ 42 ∆NAPPEND tn 2 ⋄ expect,←4↑42               ⍝ Int32
+ assert (,42)≡∆NREAD tn 2 1 5
+ ¯0.1 ∆NAPPEND tn 3 ⋄ expect,←⎕UCS 80 ⎕DR ¯0.1 ⍝ Float64
+ assert (,¯0.1)≡∆NREAD tn 3 1 9
+ text ∆NAPPEND tn 4 ⋄ expect,←97 65 184 48     ⍝ Translated Char
+ assert text≡∆NREAD tn 4 4 17
+ text ∆NAPPEND tn 5                            ⍝ UTF-16   
+ assert text≡∆NREAD tn 5 4 21
+ expect,←,⌽⍉256 256⊤'UTF-16' ⎕UCS text   
  ⍝ Skip 6 (Float32)
- ⍝'aA⍺0' ∆NAPPEND tn 8    ⍝ UTF-8
- assert z≡z←⎕UCS ⎕NREAD tn 80 (⎕NSIZE tn) 0 
+ text ∆NAPPEND tn 8 ⋄ expect,←'UTF-8' ⎕UCS text ⍝ UTF-8  
+⍝ assert text≡∆NREAD tn 8 4 29
+  
+ assert expect≡z←⎕UCS ⎕NREAD tn 80 (⎕NSIZE tn) 0 
  ⎕NUNTIE tn
 
  ⎕NDELETE filename
