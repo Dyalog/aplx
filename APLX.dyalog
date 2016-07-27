@@ -331,9 +331,10 @@
      
       (tieno conv)←arg,(≢arg)↓0 0
 
-          type←n_type conv
-          data←data n_data conv
-          data ⎕NAPPEND tieno type
+      type←n_type conv
+      data←data n_data conv
+      data ⎕NAPPEND tieno type
+      r←0 0⍴0
     ∇
 
     ∇ {file}∆NERASE tieno
@@ -375,12 +376,14 @@
       type←n_type conv
       data←data n_data conv
      
-      r←data ⎕NREPLACE tieno startbyte type
+      r←data ⎕NREPLACE tieno startbyte type 
+      r←0 0⍴0
     ∇
 
     ∇ {r}←data ∆NWRITE arg;tieno;startbyte;type;conv
     ⍝ Emulate APLX ⎕NWRITE
-    ⍝ startbyte=-1 not supported yet
+    ⍝ startbyte=-1 not supported yet 
+
       :If 1∊⍴,arg ⍝ write as is
           r←data ⎕NAPPEND tieno
       :Else
@@ -392,6 +395,7 @@
           :Else ⋄ r←data ⎕NREPLACE tieno startbyte type
           :EndIf
       :EndIf
+      r←0 0⍴0
     ∇
 
     ∇ r←la ∆OV ra;src;nl ⍝ ⎕OV in APLX
