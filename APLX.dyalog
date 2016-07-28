@@ -1,5 +1,5 @@
 ﻿:Namespace APLX
-⍝ Dyalog cover functions for APLX  V1.11
+⍝ Dyalog cover functions for APLX  V1.12
 
 ⍝ This namespace can be added as is in a workspace or individual items )COPYed.
 ⍝ If the whole workspace is added ⎕PATH should be set to '#.APLX' in order to get at the code.
@@ -427,12 +427,12 @@
 
     ∆RSHOE←{⍺←⊢ ⋄ ⎕ML←2 ⋄ ⍺⊃⍵} ⍝ ⊃
 
-    ∇ r←{opt}∆SS arg;text;from;to;type;flags;fix;⎕IO;norm;⎕ML;add1;search;io
+    ∇ r←{opt}∆SS arg;text;from;to;type;flags;fix;⎕IO;norm;⎕ML;add1;search;io;show
 ⍝ Mimic APLX' ⎕ss function
 ⍝ arg is a 2 (search) or 3 (replace) element
       :If 900⌶0 ⋄ opt←0 ⋄ :EndIf  ⍝ simple search
-      (type flags)←2↑opt,4        ⍝ advance by 1 after search
-     
+      ((show type) flags)←2↑opt,4 ⍝ advance by 1 after search
+      
       (text from to)←3↑arg,0
       fix←⊢
       :If norm←type=0  ⍝ turn regex meta char x into \x
@@ -441,19 +441,19 @@
       type←0,norm↓1    ⍝ return also length for regex
       add1←(⍴type)⍴1 0 ⍝ for ⎕IO adjustment later
       :If 1=≡,from ⋄ from←fix from
-      :Else ⋄ from←fix¨from ⋄ type,←3 ⍝ show pattern number too
+      :Else ⋄ from←fix¨from ⋄ show,←3 ⍝ show pattern number too
           add1,←1
       :EndIf
      
       ⎕IO←0 ⋄ ⎕ML←1
       :If search←to≡0
-          fix←from ⎕S type
+          fix←from ⎕S show
       :Else
           fix←from ⎕R to
       :EndIf
       :If flags>0
-          flags←⌽(9⍴2)⊤flags        ⍝ case insensitive?
-          fix←fix ⎕OPT(0⊃flags)
+          flags←⌽(9⍴2)⊤flags        
+          fix←fix ⎕OPT(0⊃flags)     ⍝ case insensitive?
           fix←fix ⎕OPT'ML'(1⊃flags) ⍝ stop after 1st
           :If search
               fix←fix ⎕OPT'OM'(2⊃flags) ⍝ advance by 1?
