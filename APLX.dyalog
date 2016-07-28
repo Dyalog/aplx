@@ -514,8 +514,10 @@
       :EndSelect
     ∇
 
-    ∇ r←n_get filename
-      r←80 ¯1 ⎕MAP filename
+    ∇ r←n_get filename;tn
+      tn←filename ⎕NTIE 0
+      r←⎕NREAD tn 80 (⎕NSIZE tn) 0
+      ⎕NUNTIE tn
     ∇
 
     ∇ r←data n_put filename;tn
