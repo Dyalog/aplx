@@ -125,6 +125,9 @@
  data ∆EXPORT filename 'csv'
  assert data≡∆IMPORT filename 'csv' 
 
+ {0 ⎕NRESIZE ⍵ ⋄ ⎕NUNTIE ⍵}filename ⎕NTIE 0
+ assert 0=⍴∆IMPORT filename 'txt'
+
  ⎕NDELETE filename
 ∇
 
@@ -160,7 +163,7 @@
  text ∆NAPPEND tn 8 ⋄ expect,←'UTF-8' ⎕UCS text ⍝ UTF-8  
 ⍝ assert text≡∆NREAD tn 8 4 29
   
- assert expect≡z←⎕UCS ⎕NREAD tn 80 (⎕NSIZE tn) 0 
+ assert expect≡z←⎕UCS ⎕NREAD tn 80 (⎕NSIZE tn) 0     
  filename ∆NERASE tn
 
  :Trap 22
