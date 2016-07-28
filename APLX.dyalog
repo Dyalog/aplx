@@ -438,8 +438,8 @@
       :If norm←type=0  ⍝ turn regex meta char x into \x
           fix←'{}[]()\^$|.?*+'∘{(⍵,b/'\')[⍋⍋b←≠\b/⍨1+b←⍵∊⍺]}
       :EndIf
-      type←0,norm↓1    ⍝ return also length for regex
-      add1←(⍴type)⍴1 0 ⍝ for ⎕IO adjustment later
+      show←0,norm↓1    ⍝ return also length for regex
+      add1←1,norm↓0    ⍝ for ⎕IO adjustment later
       :If 1=≡,from ⋄ from←fix from
       :Else ⋄ from←fix¨from ⋄ show,←3 ⍝ show pattern number too
           add1,←1
