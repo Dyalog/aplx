@@ -145,11 +145,12 @@
  assert (,42)≡∆NREAD tn 2 1 5
  42 ∆NWRITE tn 2 5                             ⍝ Test NWRITE does the same thing
  assert (,42)≡∆NREAD tn 2 1 5
- 42 ∆NREPLACE tn 5 2                           ⍝ Test NREPLACE as well
- assert (,42)≡∆NREAD tn 2 1 5
 
  ¯0.1 ∆NAPPEND tn 3 ⋄ expect,←⎕UCS 80 ⎕DR ¯0.1 ⍝ Float64
  assert (,¯0.1)≡∆NREAD tn 3 1 9
+ ¯0.1 ∆NREPLACE tn 9 3                         ⍝ Test NREPLACE as well
+ assert (,¯0.1)≡∆NREAD tn 3 1 9
+
  text ∆NAPPEND tn 4 ⋄ expect,←97 65 184 48     ⍝ Translated Char
  assert text≡∆NREAD tn 4 4 17
  text ∆NAPPEND tn 5                            ⍝ UTF-16   
@@ -171,17 +172,17 @@
  assert 1∊'TestAPLX.dyalog'⍷∆LIB FOLDER
 ∇
 
-∇ Test_SS;assert;t;MAIL;vtv;⎕IO
+∇ Test_SS;t;MAIL;vtv;⎕IO
 ⍝ Test suite for ∆SS
+ 
  ⎕IO←1
- assert←{x←÷⍵}
  assert 19=+/t←∆SS'A pixel color (or colour)' 'colour'
  assert(9 19,⍪1 2)≡t←∆SS'A pixel color (or colour)'('color' 'colour')
  ⎕IO←0
  assert(9 19,⍪1 2)≡1+t←∆SS'A pixel color (or colour)'('color' 'colour')
 
  ⎕IO←1 
-  assert(2 2⍴2 1 4 2)≡t←∆SS'.ABC.'('ABC' 'C.')  
+ assert(2 2⍴2 1 4 2)≡t←∆SS'.ABC.'('ABC' 'C.')  
  assert(2 2⍴9 5 19 6)≡t←1 ∆SS'A pixel color (or colour)' 'colou?r'
  assert(3 3⍴9 5 1 19 6 1 42 4 2)≡t←1 ∆SS'A pixel color (or colour), such as light grey'('colou?r' 'gr[ea]y')
  assert(3 2⍴9 5 19 6 42 4)≡t←1 ∆SS'A pixel color (or colour), such as light grey' 'colou?r|gr[ea]y'
@@ -191,19 +192,20 @@
  assert'∆This is ∆bold∆∆'≡t←1 ∆SS'<P>This is <B>bold</B></P>' '<[^>]+>' '∆'
  assert'This is bold'≡t←1 ∆SS'<P>This is <B>bold</B></P>' '<[^>]+>' ''
  assert'[HTML: <P>]This is [HTML: <B>]bold[HTML: </B>][HTML: </P>]'≡t←1 ∆SS'<P>This is <B>bold</B></P>' '<[^>]+>' '[HTML: \0]'
+ 
+ assert 'abc..def..'≡∆SS ('abc',∆R,'def',∆R) ∆R '..'
 
  vtv←'bill.gates@microsoft.com' 'jim@microapl.co.uk'
 ⍝ assert vtv≡t←2 1 ∆SS MAIL'\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b'
-∇    
+∇                           
 
-∇assert ok
+∇assert ok;caller
+ caller←⎕IO+1
  :If ~ok  
-    ⎕←'*** Assertion failed at ',(2⊃⎕SI),'[',(⍕2⊃⎕LC),']: '
-    ⎕←'   ',(⎕CR 2⊃⎕SI)[1+2⊃⎕LC;]
+    ⎕←'*** Assertion failed at ',(caller⊃⎕SI),'[',(⍕caller⊃⎕LC),']: '
+    ⎕←'   ',(⎕CR caller⊃⎕SI)[1+caller⊃⎕LC;]
     ⎕←' '
-    :If DEBUG ⋄ (1+⎕LC) ⎕STOP 'assert'
-        ⍝ stop here
-    :EndIf
+    'assertion failed' ⎕SIGNAL DEBUG/11
  :EndIf
 ∇
 

@@ -458,7 +458,7 @@
           :If search
               fix←fix ⎕OPT'OM'(2⊃flags) ⍝ advance by 1?
           :EndIf
-          fix←fix ⎕OPT'Mode'(0⊃flags[3]⌽'LM') ⍝ Line or Mixed mode?
+          fix←fix ⎕OPT'Mode'(0⊃((type=0)∨3⊃flags)⌽'LM') ⍝ Line or Mixed mode?
       :AndIf 1=1↑type
           fix←fix ⎕OPT'DotAll'(4⊃flags) ⍝ . matches all?
          ⍝ Return all matches for multiple searches are ignored
