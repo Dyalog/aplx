@@ -89,19 +89,19 @@
  assert 0∊⍴⎕trap   
  
  assert 0=∆EQ_ 6
-assert 2=∆EQ_ 'dsa' 3
-assert 'dsa' ∆EQ_'dsa'
-assert (⊂'dsa')≡∆LSHOE'dsa'
-assert 'dsa' 'dsa' ≡1 1 1 0 1 1 1 ∆LSHOE'dsa dsa'
-assert 2≡2 ∆RSHOE 'dsa' 2
-assert (2 3⍴'dsa')≡∆RSHOE 'dsa' 'dsa'
-assert 3≡∆UP 3 4
-assert 1 2≡2 ∆UP ⍳6
+ assert 2=∆EQ_ 'dsa' 3
+ assert 'dsa' ∆EQ_'dsa'
+ assert (⊂'dsa')≡∆LSHOE'dsa'
+ assert 'dsa' 'dsa' ≡1 1 1 0 1 1 1 ∆LSHOE'dsa dsa'
+ assert 2≡2 ∆RSHOE 'dsa' 2
+ assert (2 3⍴'dsa')≡∆RSHOE 'dsa' 'dsa'
+ assert 3≡∆UP 3 4
+ assert 1 2≡2 ∆UP ⍳6
 
-new←0=#.APLX.⎕nc'⍙MOUNT'
-assert new≤0∊⍴∆MOUNT'' ⍝ this could be false if tests are run more than once. 'new' solves this
-{}∆MOUNT 'dsa'
-assert ((∆MOUNT'')∨.≠' ')≡10↑1
+ new←0=#.APLX.⎕nc'⍙MOUNT'
+ assert new≤0∊⍴∆MOUNT'' ⍝ this could be false if tests are run more than once. 'new' solves this
+ {}∆MOUNT 'dsa'
+ assert ((∆MOUNT'')∨.≠' ')≡10↑1
 
 ∇          
 
@@ -109,7 +109,7 @@ assert ((∆MOUNT'')∨.≠' ')≡10↑1
 
  1 ⎕NDELETE filename←FOLDER,'APLXtest.dat'
 
- text←'hello',∆L,'world'
+ text←'hello',∆R,'world'
  text ∆EXPORT filename'txt' 
  assert text≡∆IMPORT filename 'txt'
  text ∆EXPORT filename'txt' 
@@ -137,11 +137,17 @@ assert ((∆MOUNT'')∨.≠' ')≡10↑1
  expect←⍬
  text←'aA⍺0'
  text ∆NAPPEND tn 0 ⋄ expect,←¯1+∆AV⍳text      ⍝ Untranslated
- assert text≡∆NREAD tn 0 4 0 
+ assert text≡∆NREAD tn 0 4 0                                 
+
  (8⍴0 1) ∆NAPPEND tn 1 ⋄ expect,←2⊥8⍴0 1       ⍝ Bool
  assert (8⍴0 1)≡∆NREAD tn 1 8 4
  42 ∆NAPPEND tn 2 ⋄ expect,←4↑42               ⍝ Int32
  assert (,42)≡∆NREAD tn 2 1 5
+ 42 ∆NWRITE tn 2 5                             ⍝ Test NWRITE does the same thing
+ assert (,42)≡∆NREAD tn 2 1 5
+ 42 ∆NREPLACE tn 5 2                           ⍝ Test NREPLACE as well
+ assert (,42)≡∆NREAD tn 2 1 5
+
  ¯0.1 ∆NAPPEND tn 3 ⋄ expect,←⎕UCS 80 ⎕DR ¯0.1 ⍝ Float64
  assert (,¯0.1)≡∆NREAD tn 3 1 9
  text ∆NAPPEND tn 4 ⋄ expect,←97 65 184 48     ⍝ Translated Char
@@ -154,10 +160,14 @@ assert ((∆MOUNT'')∨.≠' ')≡10↑1
 ⍝ assert text≡∆NREAD tn 8 4 29
   
  assert expect≡z←⎕UCS ⎕NREAD tn 80 (⎕NSIZE tn) 0 
- ⎕NUNTIE tn
+ filename ∆NERASE tn
 
- ⎕NDELETE filename
-
+ :Trap 22
+    filename ⎕NTIE tn 
+ :Else               
+    assert 'Unable to open file'{⍺≡(≢⍺)↑⍵}∆NERROR
+ :EndTrap
+ 
  assert 1∊'TestAPLX.dyalog'⍷∆LIB FOLDER
 ∇
 

@@ -278,6 +278,7 @@
       :Select type
       :Case 'txt'
           Z←n_get file
+          ((Z=⎕UCS 10)/Z)←⎕UCS 13 ⍝ APLX return CR
       :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'
           type←(1+'6'=¯1↑type)⊃'UTF-8' 'UTF-16'
           Z←n_get file
@@ -310,7 +311,7 @@
     ∇
 
     ∇ r←∆MOUNT arg;id;sha;shm;max
-⍝ Simulate ⎕MOUNT in APLX
+    ⍝ Simulate ⎕MOUNT in APLX
       :If 0=⎕NC id←'#.APLX.⍙MOUNTS' ⋄ ⍎id,'←10 0⍴⎕a' ⋄ :EndIf
       :If 0∊⍴arg ⋄ r←⍎id
       :Else
@@ -324,6 +325,15 @@
 
     ∇ Z←∆N ⍝ ⎕N in APLX
       Z←⎕UCS 1
+    ∇
+    
+    ∇ r←∆NERROR  
+    ⍝ Similar to APLX ∆NERROR, but won't return the same texts                   
+      :If 0=⎕IO⊃⎕DMX.OSError
+         r←'Insufficient data availabæle'
+      :Else
+         r←⎕DMX.Message,': ',(⎕IO+2)⊃⎕DMX.OSError
+      :EndIf
     ∇
 
     ∇ {r}←data ∆NAPPEND arg;tieno;type;conv
