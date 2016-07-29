@@ -1,4 +1,4 @@
-# Differences between APLX and Dyalog APL
+﻿# Differences between APLX and Dyalog APL
 Although both APL systems are variations on IBM APL2, and most computational code will work unchanged or can be translated automatically. At the other end of the spectrum, user interface code and code which uses object oriented features of APLX may require a complete rewrite of parts of an application. The differences can be broken down as follows:
 
 * Differences in primitives and system functions or variables for which translations and emulations are readily available, such as ```⎕EXPORT```
@@ -19,7 +19,7 @@ In the following, issues are categorised by estimated difficulty:
 
 ####Complete or Nearly Complete Emulations
 
-(For example, APLX.∆a emulates ⎕A)
+(For example, APLX.∆a emulates ⎕a)
 
       ∆a    ∆AF  ∆AI  ∆AV   ∆B     ∆BOX   ∆C    ∆CALL  ∆DBR  ∆DISPLAY  
       ∆DR   ∆EA  ∆EM  ∆EQ_  ∆ERM   ∆ERX  ∆EXPORT  
