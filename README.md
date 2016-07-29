@@ -1,4 +1,4 @@
-# Introduction
+﻿# Introduction
 ##### Dated July 29th, 2016
 On July 11th 2016, MicroAPL announced the end of support for the APLX product. Dyalog has been working with APLX users on developing tools to assist in the migration of existing applications from APLX to Dyalog APL. At this time, the tools are very much “work in progress” and will be updated frequently as we receive feedback.
 
@@ -42,7 +42,7 @@ All the materials developed in this process are available as open source tools v
 Once you have the materials downloaded (for example to a folder called ```/Users/mkrom/aplx```), you have a few choices:
 
 *	```]load``` the APLX namespace and set ```⎕PATH←'#.APLX'```
-*	“disperse” the individual functions into the root of your workspac
+*	“disperse” the individual functions into the root of your workspace
 *	If desired, create APLX cover-functions [more to come]
 
 ## Running the Tests
@@ -54,13 +54,13 @@ In APLX, )Load the workspace to be transferred, then:
          )COPY C:\DEVT\APLX\XFRPCV5.AWS
     SAVED  2014-02-01 23.21.35
       
-         ∆xfrto 'C:\TEMP\DYALOGPA'
+         ∆xfrto 'C:\TEMP\MYWS'
     * XFR version 3.11
     1243 objects transferred
 
-This will create the file C:\TEMP\MYWS.XPA. Next, start Dyalog APL, after copying the latest versionf of the files ```xfrcode.dws```, ```APLX.dyalog```, and ```xfrdefs.txt``` from the repository to the Dyalog "ws" folder (xfrcode.dws will be there already).
+This will create the file C:\TEMP\MYWS.XPW. Next, start Dyalog APL, after copying the latest versionf of the files ```xfrcode.dws```, ```APLX.dyalog```, and ```xfrdefs.txt``` from the repository to the Dyalog "ws" folder (xfrcode.dws will be there already).
 
-        ]in c:\temp\dyalogpa -tr=2 -replace
+        ]in c:\temp\myws -tr=2 -replace
     * XFR version 3.88
     Using the external file "C:\.[dyalog folder].\ws\xfrdefs.txt" for translations.
     APX3.11 20160729 223656; WS=CLEAR WS
