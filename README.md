@@ -14,13 +14,26 @@ Thanks to *Dan Baronet* for contributing the "xfrpc" tools which he has worked o
 ##Overview
 At the moment, the following resources are available or under development:
 
+**Updates to Dyalog v15.0:** Builds of Version 15.0 create on or after August 2nd 2016 containing the following APLX-related improvements:
+
+* Fix to a RIDE-related bug cause slow execution of code under RIDE.
+* ⎕NREAD now accepts ¯1 for the number of elements to read, meaning read to end of file
+* ⎕NREPLACE accepts ¯1 as a position, meaning "the current position"
+
 **List of Differences:** A document containing a list of differences between APLX and Dyalog APL, and a discussion of strategies for dealing with them.
 
 **```]in``` user command:** This user command is available with all standard installations of Dyalog APL v15.0 or later, can import files in APL Transfer format (.ATF) that are created by the ```)out``` system command which is found in many APL systems, including APLX. For increasing amounts of online help, type ```]?in```,  ```]??in``` (and so on) in a Dyalog session.
 
 **Source Code Translation Tool:** The APLX workspaces ```xfrpx.aws``` and ```xfrpcV5.aws``` (for APLX v5) are APLX versions of Dan Baronets xfrpc tool, which creates “enhanced” transfer files. The ```]in``` user command recognises these files and will perform translation of APLX statements into Dyalog equivalents, including references to the emulation functions described below:
 
-**Emulations of APLX Features:** The file APLX.dyalog defines a Dyalog namespace containing emulations for APLX primitives and system functions that are different or do not exist at all in Dyalog APL.
+**Emulations of APLX Features:** The file APLX.dyalog defines a Dyalog namespace containing emulations for APLX primitives and system functions that are different or do not exist at all in Dyalog APL. At the time of going to press, the following functions are defined:
+
+      ∆AF   ∆AI  ∆AV  ∆B    ∆BOX   ∆C    ∆CALL  ∆DBR  ∆DISPLAY  
+      ∆DR   ∆EA  ∆EM  ∆EQ_  ∆ERM   ∆ERX  ∆EXPORT  
+      ∆FDROP    ∆FHOLD      ∆FI    ∆FREAD  ∆FWRITE    ∆GETCLASS  ∆HOST
+      ∆I    ∆IMPORT   ∆L    ∆LIB   ∆LSHOE  ∆M   ∆MOUNT  ∆N  
+      ∆NAPPEND  ∆NERASE  ∆NERROR   ∆NREAD  ∆NREPLACE  ∆NWRITE   
+      ∆OV   ∆R  ∆RSHOE  ∆SS ∆TIME  ∆UP   ∆VI    ∆W    ∆a
 
 **Test Cases:** The file TestAPLX.dyalog contains a collection of tests which put the emulation through its paces. If you have problems with any emulated features, a **VERY GOOD THING TO DO** is to contribute a failing test which someone will hopefully fix! 
 
@@ -33,3 +46,25 @@ Once you have the materials downloaded (for example to a folder called ```/Users
 *	If desired, create APLX cover-functions [more to come]
 
 ## Running the Tests
+
+##Taking it for a Spin
+
+In APLX, )Load the workspace to be transferred, then:
+
+         )COPY C:\DEVT\APLX\XFRPCV5.AWS
+    SAVED  2014-02-01 23.21.35
+      
+         ∆xfrto 'C:\TEMP\DYALOGPA'
+    * XFR version 3.11
+    1243 objects transferred
+
+This will create the file C:\TEMP\MYWS.XPA. Next, start Dyalog APL, after copying the latest versionf of the files ```xfrcode.dws```, ```APLX.dyalog```, and ```xfrdefs.txt``` from the repository to the Dyalog "ws" folder (xfrcode.dws will be there already).
+
+        ]in c:\temp\dyalogpa -tr=2 -replace
+    * XFR version 3.88
+    Using the external file "C:\.[dyalog folder].\ws\xfrdefs.txt" for translations.
+    APX3.11 20160729 223656; WS=CLEAR WS
+    #.APLX defined from file "C:\.[dyalog folder].\ws\APLX.dyalog"
+    1243 objects defined
+     
+At this point, ```APLX``` will be a namespace containing the emulation functions, and ```⎕PATH``` will have been set to ```#.APLX```.
