@@ -74,4 +74,9 @@ This will create the file C:\TEMP\MYWS.XPW. Next, start Dyalog APL, after copyin
      
 At this point, ```APLX``` will be a namespace containing the emulation functions, and ```⎕PATH``` will have been set to ```#.APLX```.
 
+##Running the same code in APLX and Dyalog APL
+The files ReadCovers/FixCovers are work in progress, with the intention of creating cover-functions in both APLX (for real system functions) and Dyalog APL (for emulation functions), so that the same application code can run on both systems. This will be useful for application which are in active development under APLX while migration work is in progress. This code is not yet working.
+
+##Comments and Questions
+
 Please send question and comments to [aplx@dyalog.com](mailto:aplx@dyalog.com), or the forum section created for this purpose: [http://www.dyalog.com/forum/viewforum.php?f=37](), or sign up to GitHub and submit comments and change requests there!
