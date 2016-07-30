@@ -50,7 +50,7 @@ You can now edit the TestAPLX and APLX namespaces (the latter was brought in aut
 
 You have a choice of exporting your workspace using )OUT in APLX and ]in in Dyalog APL, and making your own modifications to call the emulation functions. Alternatively, you can use the xfrpc tool to automatically modify the code to call emulation functions and make other changes to the code.
 
-The conversions are controlled by the file [xfrdefs.txt](), and if you are brave you can experiment with adding lines to this file (in the section following ```:APX```), or perhaps removing conversions that you do not wish to make.
+The conversions are controlled by the file [xfrdefs.txt](xfrdefs.txt), and if you are brave you can experiment with adding lines to this file (in the section following ```:APX```), or perhaps removing conversions that you do not wish to make.
 
 Once you have made any changes that you wish to make, copy the latest versions of the files ```xfrcode.dws```, ```APLX.dyalog```, and ```xfrdefs.txt``` from the repository to the Dyalog "ws" folder (xfrcode.dws will be there already, it is used by by ```]in``` user command, it is best to update it just in case you have an older version).
 
@@ -79,4 +79,4 @@ The files ReadCovers/FixCovers are work in progress, with the intention of creat
 
 ##Comments and Questions
 
-Please send question and comments to [aplx@dyalog.com](mailto:aplx@dyalog.com), or the forum section created for this purpose: [http://www.dyalog.com/forum/viewforum.php?f=37](), or sign up to GitHub and submit comments and change requests there!
+Please send question and comments to [aplx@dyalog.com](mailto:aplx@dyalog.com), or the [Dyalog Forums](http://www.dyalog.com/forum/viewforum.php?f=37), or sign up to GitHub and submit comments and change requests there!
