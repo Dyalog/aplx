@@ -3,15 +3,18 @@ Both APL systems are variations on IBM APL2, and most computational code will wo
 
 This document lists the emulations provided, the limitations that we are currently aware of, and a discussion of differences that we are unlikely to address unless someone find a way to motivate us. It is very much work in progress; and if you find that there are features that you desperately need, please get in touch to discuss. Contributions of enhancements or additions to the emulations, or simply failing test cases, are all very welcome.
 
-Fundamental Differences
+## Important Differences
 In addition to the emulations and automated transformations, you application may use features of APLX which are not supported at all in Dyalog APL, and which we are not currently planning to work on:
 
 * The ```⎕WI``` user interface tool is not provided, and Dyalog has no plans to work on this, as the UI paradigm that it represents is fundamentally obsolete (this is a major part of the reason why APLX was discontinued). Contact Dyalog to discuss how you can provide alternative user interfaces in Dyalog APL using WPF, HTML/Javascript or other technologies.
 * ```⎕CHART``` is not emulated: Dyalog provides SharpPlot and interfaces to Javascript-based charting as alternatives.
-* Object Oriented features in Dyalog are more similar to OO in languages like C# and Java. There is currently no support for external Java and Ruby objects.
-* Dyalog APL essentially provides the same native and component file functionality, but there is no concept of library numbers, and Dyalog APL insists that component files have positive tie numbers, while native file ties are negative. See the separate sections below for further discussion.
+* Object Oriented features in Dyalog are in many ways more powerful than those in APLX, but they are different. There is currently no support for external Java and Ruby objects.
+* Dyalog APL essentially provides the same native and component file functionality as APLX, but there is no concept of library numbers, and Dyalog APL insists that component files have positive tie numbers, while native file ties are negative. See the separate sections below for further discussion.
 * The R interface is significantly different but should provide the same capabilities.
-* There are a handful of core language differences which are difficult to translate automatically and will probably require manual recoding:
+
+###Language Differences
+There are a handful of core language differences which are difficult to translate automatically and will probably require manual recoding:
+
    * Brackets bind differently: ```A[2]B[1]``` is ```(A[2])(B[1])``` in APLX, but ```((A[2])B)[1]``` in Dyalog APL.
    * Slashes (```/``` and ```⌿```) are strictly operators in APLX, but in Dyalog APL they are functions when there is an array on the left. This gives different results when slashes are combined with other operators. For example ```1 0 1/¨⍳3``` returns ```(1 1)(2 2)(3 3)``` in APLX and ```(,1)⍬(,3)``` in Dyalog APL. The equivalent expression in Dyalog APL would be ```1 0 1∘/¨⍳3```.
    * In Dyalog APL, Monadic ```↑``` is *mix*, ```⊃``` is *first*, and ```≡``` (*depth*) works slightly differently from APLX, unless ```⎕ML>1```.
@@ -20,8 +23,8 @@ In addition to the emulations and automated transformations, you application may
    * Partitioned enclose (dyadic ```⊂```), works differently from APLX unless ⎕ML←3.
    * Dyalog APL does not support ```⍺``` picture formatting, and ```⎕FC``` cannot be used to control formatting.
    * ```⍞``` works differently: In APLX the prompt (if any) is replaced according to ```⎕PR```
-   * ```⎕RL``` is richer in Dyalog APL, allowing the selection of several different random number generators. In Dyalog APL, ⎕RL←0 generates a "truly" random seed. APLX code should work unchanged but seed-setting functions should be examined and random sequences may be different
-   * Note that the default comparison tolerance in (```⎕CT```) in APLX is 1E¯13, but 1e¯14 in Dyalog APL, which could concievably cause computational differences; you may need to set it explicitly.
+   * ```⎕RL``` is richer in Dyalog APL, allowing the selection of several different random number generators. In Dyalog APL, ```⎕RL←0``` generates a "truly" random seed. APLX code should work unchanged but seed-setting functions should be examined and random sequences may be different
+   * Note that the default comparison tolerance in (```⎕CT```) in APLX is 1E¯13, but 1E¯14 in Dyalog APL, which could conceivably cause computational differences; you may need to set it explicitly.
    * APLX variable names can contain a high minus (```¯```), this not allowed in Dyalog APL
    * Dyalog APL does not have 64-bit integers, even in the 64-bit versions.
    * Dyalog APL does not allow "undefined" assignments to system variables (```⎕WA←3```).
@@ -40,23 +43,23 @@ Dyalog APL has no concept of numeric libraries, and component file tie numbers m
 
 * ```⎕FDUP``` in APLX is ```⎕FCOPY``` in Dyalog. The access code is different (16384 vs 4096).
 * When creating a file Dyalog adds the extension ```.dcf``` if no extension is provided.
-*```⎕FRDCI``` reports the time when the component was written in seconds since 2000/1/1. Dyalog reports it in 1/60th of a second since 1970/1/1
-* ```⎕FRENAME``` accepts a filename as right argument under APLX, Dyalog doesn't.
-* ```⎕FSIZE``` returns 5 elements in APLX while Dyalog reports 4. The 4th element may be 0 in APLX meaning "no limit". In APLX, the 5th element is the unused space in the file.
-* ```⎕FRDFI```, ```⎕FCSIZE```, ```⎕FWRITE``` and ```⎕FDELETE``` do not exist in Dyalog APL
+* ```⎕FRDCI``` reports the time when the component was written in seconds since 2000/1/1. Dyalog reports it in 1/60th of a second since 1970/1/1
+* ```⎕FRENAME``` accepts a filename as right argument under APLX, but not in Dyalog APL.
+* ```⎕FSIZE``` in APLX has a 5th element which gives the unused space in the file. The 4th element may be 0 in APLX meaning "no limit".
+* ```⎕FRDFI```, ```⎕FCSIZE``` and ```⎕FDELETE``` do not exist in Dyalog APL (but ```⎕NDELETE``` can be used in place of ```⎕FDELETE```).
 
 ###Native files
 Note that an update to Dyalog 15.0 was released at the beginning of August, with support for ¯1 in the arguments to ```⎕NREPACE (used by ∆NWRITE)``` (position of ¯1 means write to current position) and ```⎕NREAD``` (count of ¯1 means read to end of file).
 
-* The emulation functions for ```⎕NWRITE, ⎕NAPPEND, ⎕NREPLACE, ⎕NREAD``` support nearly all APLX type numbers. However, ∆NREAD cannot read a specific number of elements counts for variable-length encodings (UTF-8 and UTF-16).
+* The emulation functions for ```⎕NWRITE, ⎕NAPPEND, ⎕NREPLACE, ⎕NREAD``` support nearly all APLX conversion codes. However, ```∆NREAD``` cannot read a specific number of elements counts for variable-length encodings (UTF-8 and UTF-16).
 * ```⎕NCREATE``` does not support a 2nd element (permissions) in the right argument
 * ```∆NERROR``` attempts to emulate ```⎕NERROR```, but the error messages will not be identical, and Native File errors are not separated from other errors.
 
 ###Classes
 
-Unfortunately, the Object Oriented functionality of the two systems are very different, although many capabilities are presented in both systems.
+Unfortunately, the Object Oriented functionality of the two systems are quite different, although many capabilities are presented in both systems.
 
-Dyalog only supports internal classes defined in APL and .Net classes, and the following emulations kind of work:
+The following emulations work for APL objects and Microsoft.NET objects:
 
 * ⎕GETCLASS	: for APL and .Net only you can use execute (⍎)
 * ⎕CLASSNAME: format (⍕) will display a string of the class name.
@@ -76,7 +79,7 @@ After all the bad news: fairly decent emulations are provided for a large number
       ∆NAPPEND  ∆NERASE    ∆NREAD     ∆NREPLACE  ∆NWRITE   
       ∆OV   ∆R  ∆SS  ∆TIME ∆VI  ∆W    ∆WSSIZE
 
-### Replacements for ML-Dependend Primitives
+### Replacements for ML-Dependent Primitives
 
 Emulation functions are provided for the primitives which can be brought to behave the same way as APLX by setting ⎕ML. This allows a migrated application to immeduately run with the default Dyalog Migration Level of 1, and for the use of these functions to be replaced over time. 
 
