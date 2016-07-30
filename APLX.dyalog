@@ -199,12 +199,12 @@
     ∇
 
     ∇ r←{la}∆FDROP arg
-⍝ Fdrop in APLX
+    ⍝ ⍗ in APLX
       :If 900⌶⍬
-          :If 0=1↓2↑arg
+          :If 0=1↓2↑arg ⍝ 0=drop last component
               ⎕FDROP(1↑arg),¯1 ⋄ r←1
           :Else
-              .
+              'Unable to drop from middle of file' ⎕SIGNAL 11
           :EndIf
       :Else
           .
@@ -213,7 +213,7 @@
 
     ∇ {r}←{opt}∆FHOLD fs
 ⍝ File resize/hold in APLX
-      :If 900⌶r←⍬
+      :If 900⌶r←0 0⍴0
           (1↓fs)⎕FRESIZE 1↑fs
       :Else
           ÷'hold not implemented'
@@ -482,13 +482,16 @@
     ∆UP←{⍺←⊣ ⋄ ⎕ML←2 ⋄ ⍺↑⍵} ⍝ ↑
 
     ∇ r←∆VI y
-⍝ Emulate ⎕VI under APLX
       r←⎕IO⊃⎕VFI y
     ∇
 
     ∇ r←∆W
       r←↑⍤0⊢'SUNDAY' 'MONDAY' 'TUESDAY' 'WEDNESDAY' 'THURSDAY' 'FRIDAY' 'SATURDAY'
     ∇
+    
+    ∇ r←∆WSSIZE
+      r←2000⌶16
+    ∇     
 
     ∇ type←n_type conv;⎕IO;ix
     ⍝ Convert APLX native file conversion codes

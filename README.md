@@ -1,8 +1,10 @@
-﻿# Introduction
+# Introduction
 ##### Dated July 29th, 2016
 On July 11th 2016, MicroAPL announced the end of support for the APLX product. Dyalog has been working with APLX users on developing tools to assist in the migration of existing applications from APLX to Dyalog APL. At this time, the tools are very much “work in progress” and will be updated frequently as we receive feedback.
 
 Comments and contributions are very welcome. Since Dyalog Ltd still has relatively limited knowledge of active APLX applications, we need input from APLX users to help us prioritise our work! Write to us at [aplx@dyalog.com](mailto:aplx@dyalog.com), or watch the forum section created for this purpose: [http://www.dyalog.com/forum/viewforum.php?f=37]() (note that membership not required in order to read the contents of the Dyalog forums).
+
+**Important:** *All of the tools and documents in this repository are provided free of charge and without warranty of any kind. Dyalog will endeavour to correct any defects that are reported, but this is a community effort and not a supported product from Dyalog Ltd.* 
 
 ###Acknowledgements
 Many thanks to *Jay Whipple III* for suffering through the first versions of the mulations - all APLX users who follow in his footsteps should be grateful for his pioneering spirit!

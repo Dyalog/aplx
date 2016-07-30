@@ -1,4 +1,4 @@
-﻿# Differences between APLX and Dyalog APL
+# Differences between APLX and Dyalog APL
 Although both APL systems are variations on IBM APL2, and most computational code will work unchanged or can be translated automatically. At the other end of the spectrum, user interface code and code which uses object oriented features of APLX may require a complete rewrite of parts of an application. The differences can be broken down as follows:
 
 * Differences in primitives and system functions or variables for which translations and emulations are readily available, such as ```⎕EXPORT```
@@ -15,24 +15,51 @@ In the following, issues are categorised by estimated difficulty:
 
 **NB:** This table is under revision and is likely to change as we understand the differences better. Some differences may be re-categorised as we add emulation software. Input to help prioritise this work is very welcome!
 
-###Emulated System Functions
+###Emulations
+All the emulations can be found in the file APLX.dyalog in the repository:
 
-####Complete or Nearly Complete Emulations
+####System Functions which are Identical
+
+      ⎕CR ⎕D ⎕DL 
+
+####Complete or Nearly Complete System Functions
 
 (For example, APLX.∆a emulates ⎕a)
 
       ∆a    ∆AF  ∆AI  ∆AV   ∆B     ∆BOX   ∆C    ∆CALL  ∆DBR  ∆DISPLAY  
-      ∆DR   ∆EA  ∆EM  ∆EQ_  ∆ERM   ∆ERX  ∆EXPORT  
-      ∆FDROP    ∆FHOLD      ∆FI    ∆FREAD  ∆FWRITE    ∆GETCLASS  ∆HOST
-      ∆I    ∆IMPORT   ∆L    ∆LIB   ∆LSHOE  ∆M   ∆MOUNT  ∆N  
-      ∆NAPPEND  ∆NERASE  ∆NERROR   ∆NREAD  ∆NREPLACE  ∆NWRITE   
-      ∆OV   ∆R  ∆RSHOE  ∆SS ∆TIME  ∆UP   ∆VI    ∆W   
+      ∆DR   ∆EA  ∆EM  ∆ERM  ∆EXPORT  
+      ∆FI    ∆GETCLASS  ∆HOST
+      ∆I    ∆IMPORT   ∆L    ∆LIB   ∆M   ∆MOUNT  ∆N  
+      ∆NAPPEND  ∆NERASE  ∆NREAD  ∆NREPLACE  ∆NWRITE   
+      ∆OV   ∆R  ∆SS ∆TIME  ∆UP   ∆VI    ∆W   
 
-####Partial Emulations
+####Functions Used to Deal with Translation of Primitives
 
-* ⎕CALL	(only .Net calls)
+      ∆EQ_ ∆LSHOE ∆RSHOE
 
-###Missing System Functions
+#####Known Limitations
+* Native file functions to not handle explicit byte swapping, 64-bit integers or single-precision floats
+* Import/Export do not handle the ```slk``` format
+* ```∆CALL```	(only .Net calls)
+* ```∆ERX```	It is not really possible to fully emulate ⎕ERX
+* ```∆FDROP (⍗)``` Can only drop the last component
+* ```∆FHOLD (⍐)``` Monadic only (⎕FRESIZE) 
+* ```∆FREAD (⍇)``` Monadic only, and passnumbers are ignored
+* ```∆FWRITE (⍈)``` User ID and passno ignored
+* ```∆MOUNT``` Beginning of support
+* ```∆GETCLASS``` Microsoft.NET only 
+* ```∆HOST``` No timeout, and the format of results is nested 
+* ```∆NERROR``` Error message texts will be different, and sometimes reflect other recent errors not related to native files 
+* ```∆SS``` is work in progress, we are not 100% sure we have all the cases covered, especially not regular expression cases
+* 
+
+###Currently Missing
+
+⎕AT Object Attributes
+
+⎕CC Console Control
+
+⎕CS Similar functionality to ⎕ML, but completely different
 
 ⎕CHART	this might be replaced by ⎕SE.UCMD 'chart …'
 
@@ -40,9 +67,15 @@ In the following, issues are categorised by estimated difficulty:
 
 ⎕CLASS	has 2 nested vectors in Dyalog
 
+⎕CLASSES (⎕NL 9) provides similar functionality in Dyalog APL
+
 ⎕CONF	has no equivalent in Dyalog
 
-⎕FC	is used in APLX when format (⍕) is used dyadically. No equivalent in Dyalog.
+⎕DR Similar but the exact functionality is different
+
+⎕EDIT Similar but not identica to ⎕ED
+
+⎕FC	is used to control dyadic format (⍕) in APLX. There is no equivalent in Dyalog.
 
 ⎕HC	Hard Copy, no such equivalent in Dyalog
 
@@ -51,6 +84,8 @@ In the following, issues are categorised by estimated difficulty:
 ⎕MC Dyalog has full Unicode support and has no concept of a "Missing Character"
 
 ⎕SQL must be replaced by calls to the functions in distributed workspace SQAPL
+
+⎕WI
 
 ⎕OV: APLX "overlays" are a mechanism for storing names and definitions accessible through the system function ⎕OV. Dyalog namespaces are significantly more powerful.
 

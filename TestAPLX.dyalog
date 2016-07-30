@@ -61,7 +61,15 @@
  assert 42≡'42⊣∆a'∆EA'1÷0'
 
  assert(↑⎕DM)≡∆EM  
- assert(¯1↓⊃,/⎕DM,¨⎕UCS 13)≡∆ERM
+ assert(¯1↓⊃,/⎕DM,¨⎕UCS 13)≡∆ERM 
+
+∇
+ 
+∇Test_Misc
+ 
+ assert '(System.DateTime)'≡⍕'.net' ∆GETCLASS 'System.DateTime'
+
+ assert ∆WSSIZE=2000⌶16
 
  assert 1 0 1≡∆VI'1 E 2'
  assert 1 0 2≡∆FI'1 E 2'
@@ -129,6 +137,22 @@
  assert 0=⍴∆IMPORT filename 'txt'
 
  ⎕NDELETE filename
+∇
+
+∇ Test_CFiles;filename;tn;z
+ 1 ⎕NDELETE filename←FOLDER,'APLXtest.dcf'
+ 
+ tn←filename ⎕FCREATE 0
+ 'Hello' ∆FWRITE tn 0 ⍝ ⎕FAPPEND
+ assert 'Hello'≡∆FREAD tn 1     
+ 'There' ∆FWRITE tn 1 ⍝ ⎕FREPLACE
+ assert 'There'≡∆FREAD tn 1     
+ z←∆FHOLD tn 1E6
+ assert 1≡∆FDROP tn 0 ⍝ ⎕FDROP tn ¯1
+ assert 1 1 1E6≡1 1 0 1/⎕FSIZE tn
+
+ ⎕FUNTIE tn
+ 1 ⎕NDELETE filename
 ∇
 
 ∇ Test_NFiles;filename;z;tn;expect;text
