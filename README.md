@@ -1,57 +1,60 @@
 # Introduction
-##### Dated July 29th, 2016
+##### Dated July 30th, 2016
 On July 11th 2016, MicroAPL announced the end of support for the APLX product. Dyalog has been working with APLX users on developing tools to assist in the migration of existing applications from APLX to Dyalog APL. At this time, the tools are very much “work in progress” and will be updated frequently as we receive feedback.
 
 Comments and contributions are very welcome. Since Dyalog Ltd still has relatively limited knowledge of active APLX applications, we need input from APLX users to help us prioritise our work! Write to us at [aplx@dyalog.com](mailto:aplx@dyalog.com), or watch the forum section created for this purpose: [http://www.dyalog.com/forum/viewforum.php?f=37]() (note that membership not required in order to read the contents of the Dyalog forums).
 
-**Important:** *All of the tools and documents in this repository are provided free of charge and without warranty of any kind. Dyalog will endeavour to correct any defects that are reported, but this is a community effort and not a supported product from Dyalog Ltd.* 
+**Important:** *All of the tools and documents and other information contained in this repository are provided free of charge and without warranty of any kind. Dyalog will endeavour to correct any defects that are reported, but this is a community effort and not a supported product from Dyalog Ltd.* 
 
 ###Acknowledgements
-Many thanks to *Jay Whipple III* for suffering through the first versions of the mulations - all APLX users who follow in his footsteps should be grateful for his pioneering spirit!
+Many thanks to *Jay Whipple III* for suffering through the first versions of the emulations - all APLX users who subsequently use these tools should be grateful for his pioneering spirit and prepare to buy him the drink of his choice at the next User Meeting!
 
 Thanks to *Dan Baronet* for contributing the "xfrpc" tools which he has worked on for decades.
 
 **NB:** The tools remain in a state of rapid flux. Feedback and contributions are very welcome!
+ Did we say that already?
 
 ##Overview
 At the moment, the following resources are available or under development:
 
-**Updates to Dyalog v15.0:** Builds of Version 15.0 create on or after August 2nd 2016 containing the following APLX-related improvements:
+**Updates to Dyalog v15.0:** Builds of Version 15.0 dated July 29th 2016 or later, include the following APLX-related improvements:
 
-* Fix to a RIDE-related bug cause slow execution of code under RIDE.
+* A fix to an issue with communication between the interpreter and the RIDE was causing slow execution of code under RIDE.
 * ⎕NREAD now accepts ¯1 for the number of elements to read, meaning read to end of file
 * ⎕NREPLACE accepts ¯1 as a position, meaning "the current position"
 
-**List of Differences:** A document containing a list of differences between APLX and Dyalog APL, and a discussion of strategies for dealing with them.
+**List of Differences:** A document containing a list of differences between APLX and Dyalog APL, and a discussion of strategies for dealing with them. See [Differences.md]().
+
+**Emulations of APLX Features:** The file [APLX.dyalog]() defines a Dyalog namespace containing emulations for APLX primitives and system functions that are different or do not exist at all in Dyalog APL.
 
 **```]in``` user command:** This user command is available with all standard installations of Dyalog APL v15.0 or later, can import files in APL Transfer format (.ATF) that are created by the ```)out``` system command which is found in many APL systems, including APLX. For increasing amounts of online help, type ```]?in```,  ```]??in``` (and so on) in a Dyalog session.
 
-**Source Code Translation Tool:** The APLX workspaces ```xfrpx.aws``` and ```xfrpcV5.aws``` (for APLX v5) are APLX versions of Dan Baronets xfrpc tool, which creates “enhanced” transfer files. The ```]in``` user command recognises these files and will perform translation of APLX statements into Dyalog equivalents, including references to the emulation functions described below:
+**Source Code Translation Tool:** The APLX workspaces ```xfrpx.aws``` and ```xfrpcV5.aws``` (for APLX v5) are APLX versions of Dan Baronets xfrpc tool, which creates “enhanced” transfer files. The ```]in``` user command recognises these files and will perform translation of APLX statements into Dyalog equivalents, including references to the emulation functions.
 
-**Emulations of APLX Features:** The file APLX.dyalog defines a Dyalog namespace containing emulations for APLX primitives and system functions that are different or do not exist at all in Dyalog APL. At the time of going to press, the following functions are defined:
-
-      ∆AF   ∆AI  ∆AV  ∆B    ∆BOX   ∆C    ∆CALL  ∆DBR  ∆DISPLAY  
-      ∆DR   ∆EA  ∆EM  ∆EQ_  ∆ERM   ∆ERX  ∆EXPORT  
-      ∆FDROP    ∆FHOLD      ∆FI    ∆FREAD  ∆FWRITE    ∆GETCLASS  ∆HOST
-      ∆I    ∆IMPORT   ∆L    ∆LIB   ∆LSHOE  ∆M   ∆MOUNT  ∆N  
-      ∆NAPPEND  ∆NERASE  ∆NERROR   ∆NREAD  ∆NREPLACE  ∆NWRITE   
-      ∆OV   ∆R  ∆RSHOE  ∆SS ∆TIME  ∆UP   ∆VI    ∆W    ∆a
-
-**Test Cases:** The file TestAPLX.dyalog contains a collection of tests which put the emulation through its paces. If you have problems with any emulated features, a **VERY GOOD THING TO DO** is to contribute a failing test which someone will hopefully fix! 
+**Test Cases:** The file [TestAPLX.dyalog]() contains a collection of tests which put the emulations through their paces. If you have problems with any emulated features, a **VERY GOOD THING TO DO** is to contribute a failing test which someone will hopefully fix! 
 
 ## Getting Set Up
-All the materials developed in this process are available as open source tools via github, and can be found at [http://github.com/Dyalog/aplx](). The easiest way to get hold of a local copy is to download the zip package [https://github.com/Dyalog/aplx/archive/master.zip](), if you want to participate actively or be able to easily view the revision history as new versions are developed, we suggest that you install a GUI front-end for git, for example SourceTree (which is used within the Dyalog development team) or git gui, and clone the repository.
-Once you have the materials downloaded (for example to a folder called ```/Users/mkrom/aplx```), you have a few choices:
+All the materials developed in this process are available as open source tools via github, and can be found at [http://github.com/Dyalog/aplx](). The easiest way to get hold of a local copy is to download the [zip package](https://github.com/Dyalog/aplx/archive/master.zip), if you want to participate actively or be able to easily view the revision history as new versions are developed, we suggest that you install a GUI front-end for git, for example [SourceTree](https://www.sourcetreeapp.com/) (which is used within the Dyalog development team) or use the [git gui](https://git-scm.com/downloads), and clone the repository.
 
-*	```]load``` the APLX namespace and set ```⎕PATH←'#.APLX'```
-*	“disperse” the individual functions into the root of your workspace
-*	If desired, create APLX cover-functions [more to come]
+### Running the Tests
 
-## Running the Tests
+Once you have the materials downloaded (for example to a folder called ```/Users/mkrom/aplx```), it is suggested that you run the test script:
 
-##Taking it for a Spin
+        ⎕FIX 'file:///Users/mkrom/aplx/TestAPLX.dyalog'
+        TestAPLX.Run 0
+    APLX tests completed
 
-In APLX, )Load the workspace to be transferred, then:
+You can now edit the TestAPLX and APLX namespaces (the latter was brought in automatically) and add emulations, or test cases - and submit proposals for extensions.
+
+## Bringing your Code Across
+
+You have a choice of exporting your workspace using )OUT in APLX and ]in in Dyalog APL, and making your own modifications to call the emulation functions. Alternatively, you can use the xfrpc tool to automatically modify the code to call emulation functions and make other changes to the code.
+
+The conversions are controlled by the file [xfrdefs.txt](), and if you are brave you can experiment with adding lines to this file (in the section following ```:APX```), or perhaps removing conversions that you do not wish to make.
+
+Once you have made any changes that you wish to make, copy the latest versions of the files ```xfrcode.dws```, ```APLX.dyalog```, and ```xfrdefs.txt``` from the repository to the Dyalog "ws" folder (xfrcode.dws will be there already, it is used by by ```]in``` user command, it is best to update it just in case you have an older version).
+
+Now we are ready to do the transfer: In APLX, )Load the workspace to be transferred, then:
 
          )COPY C:\DEVT\APLX\XFRPCV5.AWS
     SAVED  2014-02-01 23.21.35
@@ -60,7 +63,7 @@ In APLX, )Load the workspace to be transferred, then:
     * XFR version 3.11
     1243 objects transferred
 
-This will create the file C:\TEMP\MYWS.XPW. Next, start Dyalog APL, after copying the latest versionf of the files ```xfrcode.dws```, ```APLX.dyalog```, and ```xfrdefs.txt``` from the repository to the Dyalog "ws" folder (xfrcode.dws will be there already).
+This will create the file C:\TEMP\MYWS.XPW. Next, start Dyalog APL, after copying the .
 
         ]in c:\temp\myws -tr=2 -replace
     * XFR version 3.88
@@ -70,3 +73,5 @@ This will create the file C:\TEMP\MYWS.XPW. Next, start Dyalog APL, after copyin
     1243 objects defined
      
 At this point, ```APLX``` will be a namespace containing the emulation functions, and ```⎕PATH``` will have been set to ```#.APLX```.
+
+Please send question and comments to [aplx@dyalog.com](mailto:aplx@dyalog.com), or the forum section created for this purpose: [http://www.dyalog.com/forum/viewforum.php?f=37](), or sign up to GitHub and submit comments and change requests there!
