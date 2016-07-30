@@ -2,7 +2,7 @@
 ##### Dated July 30th, 2016
 On July 11th 2016, MicroAPL announced the end of support for the APLX product. Dyalog has been working with APLX users on developing tools to assist in the migration of existing applications from APLX to Dyalog APL. At this time, the tools are very much “work in progress” and will be updated frequently as we receive feedback.
 
-Comments and contributions are very welcome. Since Dyalog Ltd still has relatively limited knowledge of active APLX applications, we need input from APLX users to help us prioritise our work! Write to us at [aplx@dyalog.com](mailto:aplx@dyalog.com), or watch the forum section created for this purpose: [http://www.dyalog.com/forum/viewforum.php?f=37]() (note that membership not required in order to read the contents of the Dyalog forums).
+Comments and contributions are very welcome. Since Dyalog Ltd still has relatively limited knowledge of active APLX applications, we need input from APLX users to help us prioritise our work! Write to us at [aplx@dyalog.com](mailto:aplx@dyalog.com), or watch [the forum section created for this purpose](http://www.dyalog.com/forum/viewforum.php?f=37) (note that membership not required in order to read the contents of the Dyalog forums).
 
 **Important:** *All of the tools and documents and other information contained in this repository are provided free of charge and without warranty of any kind. Dyalog will endeavour to correct any defects that are reported, but this is a community effort and not a supported product from Dyalog Ltd.* 
 
@@ -23,9 +23,9 @@ At the moment, the following resources are available or under development:
 * ⎕NREAD now accepts ¯1 for the number of elements to read, meaning read to end of file
 * ⎕NREPLACE accepts ¯1 as a position, meaning "the current position"
 
-**List of Differences:** A document containing a list of differences between APLX and Dyalog APL, and a discussion of strategies for dealing with them. See [Differences.md]().
+**List of Differences:** A document containing a [list of differences](Differences.md) between APLX and Dyalog APL, and a discussion of strategies for dealing with them. .
 
-**Emulations of APLX Features:** The file [APLX.dyalog]() defines a Dyalog namespace containing emulations for APLX primitives and system functions that are different or do not exist at all in Dyalog APL.
+**Emulations of APLX Features:** The file [APLX.dyalog](APLX.dyalog) defines a Dyalog namespace containing emulations for APLX primitives and system functions that are different or do not exist at all in Dyalog APL.
 
 **```]in``` user command:** This user command is available with all standard installations of Dyalog APL v15.0 or later, can import files in APL Transfer format (.ATF) that are created by the ```)out``` system command which is found in many APL systems, including APLX. For increasing amounts of online help, type ```]?in```,  ```]??in``` (and so on) in a Dyalog session.
 
