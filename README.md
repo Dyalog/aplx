@@ -2,7 +2,7 @@
 ##### Dated July 30th, 2016
 On July 11th 2016, MicroAPL announced the end of support for the APLX product. Since that date, Dyalog has been working with APLX users on developing tools to assist in the migration of existing applications from APLX to Dyalog APL. At this time, the tools are very much “work in progress” and will be updated frequently as we receive feedback.
 
-Comments and contributions are very welcome. Since Dyalog Ltd still has relatively limited knowledge of active APLX applications, we need input from APLX users to help us prioritise our work! Write to us at [aplx@dyalog.com](mailto:aplx@dyalog.com), or watch [the forum section created for this purpose](http://www.dyalog.com/forum/viewforum.php?f=37) (note that membership not required in order to read the contents of the Dyalog forums).
+Comments and contributions are very welcome. Since Dyalog Ltd still has relatively limited knowledge of active APLX applications, we need input from APLX users to help us prioritise our work! Write to us at [aplx@dyalog.com](mailto:aplx@dyalog.com), or participate in [the forum section created for this purpose](http://www.dyalog.com/forum/viewforum.php?f=37) (note that membership not required in order to read the contents of the Dyalog forums).
 
 **Important:** *All of the tools and documents and other information contained in this repository are provided free of charge and without warranty of any kind. Dyalog will endeavour to correct any defects that are reported, but this is a community effort and not a supported product from Dyalog Ltd.* 
 
@@ -19,11 +19,11 @@ At the moment, the following resources are available or under development:
 
 **Updates to Dyalog v15.0:** Builds of Version 15.0 dated July 29th 2016 or later, include the following APLX-related improvements:
 
-* A fix to an issue with communication between the interpreter and the RIDE was causing slow execution of code under RIDE.
-* ⎕NREAD now accepts ¯1 for the number of elements to read, meaning read to end of file
-* ⎕NREPLACE accepts ¯1 as a position, meaning "the current position"
+* A fix to an issue with communication between the interpreter and the RIDE, which was causing slow execution of code when using RIDE as the development environment.
+* ```⎕NREAD``` now accepts ```¯1``` for the number of elements to read, meaning read to end of file
+* ```⎕NREPLACE``` accepts ```¯1``` as a position, meaning "the current position"
 
-**List of Differences:** A document containing a [list of differences](Differences.md) between APLX and Dyalog APL, and a discussion of strategies for dealing with them. .
+**List of Differences:** A document containing a [list of differences](Differences.md) between APLX and Dyalog APL, and a discussion of strategies for dealing with them.
 
 **Emulations of APLX Features:** The file [APLX.dyalog](APLX.dyalog) defines a Dyalog namespace containing emulations for APLX primitives and system functions that are different or do not exist at all in Dyalog APL.
 
@@ -44,19 +44,19 @@ Once you have the materials downloaded (for example to a folder called ```/Users
         TestAPLX.Run 0
     APLX tests completed
 
-You can now edit the TestAPLX and APLX namespaces (the latter was brought in automatically) and add emulations, or test cases - and submit proposals for extensions.
+You can now edit the TestAPLX and APLX namespaces (the latter was brought in automatically thanks to a :Require statement in TestAPLX) and add new emulations or test cases - and submit proposals for extensions.
 
 ## Bringing your Code Across
 
-You can now export your workspace using )OUT in APLX, and then import it with ]in under Dyalog APL, and making your own modifications to call the emulation functions. Alternatively, you can use the xfrpc tool to automatically modify the code to call emulation functions and make other changes to the code.
+You export your workspace using ```)OUT``` in APLX, and then import it with ```]in``` under Dyalog APL, and make your own modifications to your source code in order to call the emulation functions. Alternatively, you can use the ```xfrpc``` tool to automatically modify the code to call emulation functions and make other changes to the code.
 
-The conversions are controlled by the file [xfrdefs.txt](xfrdefs.txt); if you are dissatisfied with these definitions and you are brave, you can experiment with adding lines to this file (in the section following ```:APX```), or perhaps removing conversions that you do not wish to make.
+The conversions are controlled by the file [xfrdefs.txt](xfrdefs.txt); if you are dissatisfied with these definitions and you are brave, you can experiment with adding lines to this file (in the section following ```:APX```), or perhaps more likely, you can remove conversions that you do not wish to make.
 
-Once you have made any changes that you wish to make, copy the latest versions of the files ```xfrcode.dws```, ```APLX.dyalog```, and ```xfrdefs.txt``` from the repository to the Dyalog "ws" folder (xfrcode.dws will be there already, it is used by by ```]in``` user command, it is best to update it just in case you have an older version).
+Once you have made any changes that you wish to make, copy the latest versions of the files ```xfrcode.dws```, ```APLX.dyalog```, and ```xfrdefs.txt``` from the repository to the Dyalog "ws" folder (```xfrcode.dws``` will be there already, it is used by by ```]in``` user command, it is best to update it just in case you have an older version).
 
-Now we are ready to do the transfer: In APLX, )Load the workspace to be transferred, then:
+Now we are ready to do the transfer: In APLX, ```)Load``` the workspace to be transferred, then:
 
-         )COPY /Users/mkrom/aplx\xfrpcV5.aws
+         )COPY /Users/mkrom/aplx/xfrpcV5.aws
     SAVED  2014-02-01 23.21.35
       
          ∆xfrto '/Users/mkrom/myws'
@@ -76,6 +76,10 @@ At this point, ```APLX``` will be a namespace containing the emulation functions
 
 ##Running the same code in APLX and Dyalog APL
 The files ReadCovers/FixCovers are work in progress, with the intention of creating cover-functions in both APLX (for real system functions) and Dyalog APL (for emulation functions), so that the same application code can run on both systems. This will be useful for application which are in active development under APLX while migration work is in progress. This code is not yet working.
+
+##Further Reading
+
+See the list and discussion of differences between APLX and Dyalog APL in the file [Differences.md](Differences.md).
 
 ##Comments and Questions
 

@@ -1,10 +1,10 @@
 # Differences between APLX and Dyalog APL
 Both APL systems are variations on IBM APL2, and most computational code will work unchanged, with automatic translation, or minor manual changes. This repository contains tools to perform automated translation and provide emulations of frequently-used features that are missing from Dyalog APL.
 
-This document lists the emulations provided, the limitations that we are currently aware of, and a discussion of differences that we are unlikely to address unless someone find a way to motivate us. It is very much work in progress; and if you find that there are features that you desperately need, please get in touch to discuss. Contributions of enhancements or additions to the emulations, or simply failing test cases, are all very welcome.
+This document lists the emulations provided, the limitations that we are currently aware of, and a discussion of differences that we are unlikely to address unless someone explains why we should. It is very much work in progress; and if you find that there are features that you desperately need, please get in touch to discuss. Contributions of enhancements or additions to the emulations, or simply failing test cases, are all very welcome.
 
 ## Important Differences
-In addition to the emulations and automated transformations, you application may use features of APLX which are not supported at all in Dyalog APL, and which we are not currently planning to work on:
+In addition to the emulated features, and language constructs which can be automatically transformed, there are a number of features of APLX which are not supported at all in Dyalog APL, and which we are not currently planning to emulate:
 
 * The ```⎕WI``` user interface tool is not provided, and Dyalog has no plans to work on this, as the UI paradigm that it represents is fundamentally obsolete (this is a major part of the reason why APLX was discontinued). Contact Dyalog to discuss how you can provide alternative user interfaces in Dyalog APL using WPF, HTML/Javascript or other technologies.
 * ```⎕CHART``` is not emulated: Dyalog provides SharpPlot and interfaces to Javascript-based charting as alternatives.
@@ -15,16 +15,16 @@ In addition to the emulations and automated transformations, you application may
 ###Language Differences
 There are a handful of core language differences which are difficult to translate automatically and will probably require manual recoding:
 
-   * Brackets bind differently: ```A[2]B[1]``` is ```(A[2])(B[1])``` in APLX, but ```((A[2])B)[1]``` in Dyalog APL.
+   * Brackets bind differently: ```A[2]B[1]``` is equivalent to ```(A[2])(B[1])``` in APLX, but ```((A[2])B)[1]``` in Dyalog APL.
    * Slashes (```/``` and ```⌿```) are strictly operators in APLX, but in Dyalog APL they are functions when there is an array on the left. This gives different results when slashes are combined with other operators. For example ```1 0 1/¨⍳3``` returns ```(1 1)(2 2)(3 3)``` in APLX and ```(,1)⍬(,3)``` in Dyalog APL. The equivalent expression in Dyalog APL would be ```1 0 1∘/¨⍳3```.
-   * In Dyalog APL, Monadic ```↑``` is *mix*, ```⊃``` is *first*, and ```≡``` (*depth*) works slightly differently from APLX, unless ```⎕ML>1```.
-   * ```⍎``` accepts system commands (```X←⍎')SYMBOLS'```) in APLX but not in Dyalog APL. System functions and I-Beams can provide the same functionality but will need recoding. In this particular case, just delete the code - Dyalog APL has a dynamic Symbol Table and you do not need to worry about how big it is.
-   * Monadic Left Tack (```⊣```) returns a shy result of ```0 0⍴0``` in APLX, in Dyalog it returns the right argument unchanged (there is insufficient space to explain why this is better in this document). ```{}``` can be used to "sink" a result.
+   * In Dyalog APL, with the default Migration Level (```⎕ML←1```), monadic ```↑``` is *mix*, ```⊃``` is *first*, and ```≡``` (*depth*) works slightly differently from APLX.
    * Partitioned enclose (dyadic ```⊂```), works differently from APLX unless ⎕ML←3.
+   * ```⍎``` accepts system commands (```X←⍎')SYMBOLS'```) in APLX but not in Dyalog APL. System functions and I-Beams can provide the same functionality but will need recoding. In this particular case, just delete the code - Dyalog APL has a dynamic Symbol Table and you do not need to worry about how big it is.
+   * Monadic Left Tack (```⊣```) returns a shy result of ```0 0⍴0``` in APLX, in Dyalog it returns the right argument unchanged. ```{}``` can be used to "sink" a result.
    * Dyalog APL does not support ```⍺``` picture formatting, and ```⎕FC``` cannot be used to control formatting.
    * ```⍞``` works differently: In APLX the prompt (if any) is replaced according to ```⎕PR```
    * ```⎕RL``` is richer in Dyalog APL, allowing the selection of several different random number generators. In Dyalog APL, ```⎕RL←0``` generates a "truly" random seed. APLX code should work unchanged but seed-setting functions should be examined and random sequences may be different
-   * Note that the default comparison tolerance in (```⎕CT```) in APLX is 1E¯13, but 1E¯14 in Dyalog APL, which could conceivably cause computational differences; you may need to set it explicitly.
+   * Note that the default comparison tolerance in (```⎕CT```) in APLX is 1E¯13, but 1E¯14 in Dyalog APL; this could conceivably cause computational differences; you may need to set it explicitly.
    * APLX variable names can contain a high minus (```¯```), this not allowed in Dyalog APL
    * Dyalog APL does not have 64-bit integers, even in the 64-bit versions.
    * Dyalog APL does not allow "undefined" assignments to system variables (```⎕WA←3```).
@@ -34,7 +34,7 @@ There are a handful of core language differences which are difficult to translat
 There are some significant differences in control structures:
 
 * APLX ```:Try``` is ```:Trap``` in Dyalog APL, and ```:CatchAll``` is ```:Else``` (converted)
-* APLX ```:CatchIf``` takes a Boolean argument. There is no catching on a specific error (number). Typically a programmer will use :CatchIf  11=↑⎕LER
+* APLX ```:CatchIf``` takes a Boolean argument. There is no catching on a specific error (number). The equivalend of ```:Case 11``` in a Dyalog ```:Trap``` statement would be ```:CatchIf  11=↑⎕LER``` in APLX.
 * ```:Repeat``` accepts a number of repetitions in APLX, but not in Dyalog APL
 * ```:Leave``` may take a label as argument in APLX, not in Dyalog APL
 
@@ -57,31 +57,31 @@ Note that an update to Dyalog 15.0 was released at the beginning of August, with
 
 ###Classes
 
-Unfortunately, the Object Oriented functionality of the two systems are quite different, although many capabilities are presented in both systems.
+Unfortunately, the Object Oriented functionality of the two systems are quite different, although many capabilities are present in both systems.
 
 The following emulations work for APL objects and Microsoft.NET objects:
 
-* ⎕GETCLASS	: for APL and .Net only you can use execute (⍎)
-* ⎕CLASSNAME: format (⍕) will display a string of the class name.
+* ```⎕GETCLASS```: for APL and .Net only you can use execute (```⍎```)
+* ```⎕CLASSNAME```: format (```⍕```) will display a string of the class name.
 
-Most OO related functions are not supported:
+Many APLX OO functions have no equivalents in Dyalog APL:
 
-⎕DS, ⎕IC, ⎕MIXIN, ⎕UNMIX, ⎕RC, ⎕RECLASS, ⎕REPARENT.
+```⎕DS, ⎕IC, ⎕MIXIN, ⎕UNMIX, ⎕RC, ⎕RECLASS, ⎕REPARENT```.
 
-## Emulations
+## Working Emulations
 
 After all the bad news: fairly decent emulations are provided for a large number of the most frequently used system functions. These functions have names beginning with ∆, in the APLX namespace. For example, ```APLX.∆a``` emulates ```⎕a``` (the lowercase letters from a-z):
 
       ∆a   ∆AF  ∆AI  ∆AV   ∆B   ∆BOX  ∆C         ∆CALL  
       ∆DBR      ∆DISPLAY   ∆DR  ∆EA   ∆EM        ∆ERM    
       ∆EXPORT   ∆FI        ∆GETCLASS  ∆HOST      ∆I
-      ∆IMPORT    ∆L  ∆LIB  ∆M         ∆N  
+      ∆IMPORT   ∆L   ∆LIB  ∆M         ∆N  
       ∆NAPPEND  ∆NERASE    ∆NREAD     ∆NREPLACE  ∆NWRITE   
       ∆OV   ∆R  ∆SS  ∆TIME ∆VI  ∆W    ∆WSSIZE
 
-### Replacements for ML-Dependent Primitives
+### Replacements for ⎕ML-Dependent Primitives
 
-Emulation functions are provided for the primitives which can be brought to behave the same way as APLX by setting ⎕ML. This allows a migrated application to immeduately run with the default Dyalog Migration Level of 1, and for the use of these functions to be replaced over time. 
+Emulation functions are provided for the primitives which can be made to behave the same way as APLX by setting ⎕ML. This allows a migrated application to be automatically converted to run with the default Dyalog Migration Level of 1, and for the use of these functions to be replaced over time. 
 
       ∆EQ_ (≡), ∆LSHOE (⊂), ∆RSHOE (⊃), ∆UP, (↑)
 
@@ -94,7 +94,7 @@ We currently believe that the following system functions do not need emulation (
 
 ### Known Limitations of Emulations
 * Native file functions to not handle conversion codes for explicit byte swapping, 64-bit integers or single-precision (4-byte) floats
-* Import/Export do not handle the ```slk``` format
+* ```∆IMPORT``` and ```∆EXPORT``` do not handle the ```slk``` format
 * ```∆CALL``` only handles Microsoft.Net
 * ```∆ERX``` This emulation is very partial; it is not really possible to fully emulate ⎕ERX
 * ```∆FDROP (⍗)``` Can only drop the last component of a file
@@ -141,3 +141,5 @@ This is mostly a list of features which are not currently emulated, and comments
 * ⎕TT terminal Type - Does not exist in Dyalog APL.
 * ⎕SETUP does not exist but many of the facilities provided have simple alternatives, at least for Microsoft.NET (Using, ByRef, Version)
 * ⎕UL User Load - not supported
+
+If one of these functions is critical to your application, please contact Dyalog Ltd.
