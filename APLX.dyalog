@@ -30,7 +30,7 @@
     ∆av,← 112  113  114  115  116  117  118  119  120  121  122 9049  200 8364   32  127
     ∆av←⎕UCS ∆av
 
-⍝ ⎕NWRITE conversion code 4 table:     
+⍝ ⎕NWRITE conversion code 4 table:
     ∆x4 ←  32  32  32  32  32  32  32 210   8 211  10 212 213  13 139 138
     ∆x4,← 148 147 178 179 180 181 167 162 150 149 153 154 169 171  33 142
     ∆x4,←  32 168  41  60 136  61  62  93 159  94 172 247  44  43  46  47
@@ -204,7 +204,7 @@
           :If 0=1↓2↑arg ⍝ 0=drop last component
               ⎕FDROP(1↑arg),¯1 ⋄ r←1
           :Else
-              'Unable to drop from middle of file' ⎕SIGNAL 11
+              'Unable to drop from middle of file'⎕SIGNAL 11
           :EndIf
       :Else
           .
@@ -278,7 +278,11 @@
       :Select type
       :Case 'txt'
           Z←n_get file
-          ((Z=⎕UCS 10)/Z)←⎕UCS 13 ⍝ APLX return CR
+          :If 'W'=1 1⊃'.'⎕WG'aplversion'
+              Z←(~¯1⌽Z⍷⍨⎕UCS 13 10)/Z ⍝ change CRLF into CR
+          :Else
+              ((Z=⎕UCS 10)/Z)←⎕UCS 13 ⍝ APLX return CR
+          :EndIf
       :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'
           type←(1+'6'=¯1↑type)⊃'UTF-8' 'UTF-16'
           Z←n_get file
@@ -326,13 +330,13 @@
     ∇ Z←∆N ⍝ ⎕N in APLX
       Z←⎕UCS 1
     ∇
-    
-    ∇ r←∆NERROR  
-    ⍝ Similar to APLX ∆NERROR, but won't return the same texts                   
+
+    ∇ r←∆NERROR
+    ⍝ Similar to APLX ∆NERROR, but won't return the same texts
       :If 0=⎕IO⊃⎕DMX.OSError
-         r←'Insufficient data availabæle'
+          r←'Insufficient data available'
       :Else
-         r←⎕DMX.Message,': ',(⎕IO+2)⊃⎕DMX.OSError
+          r←⎕DMX.Message,': ',(⎕IO+2)⊃⎕DMX.OSError
       :EndIf
     ∇
 
@@ -340,7 +344,7 @@
     ⍝ Emulate APLX ⎕NAPPEND
      
       (tieno conv)←arg,(≢arg)↓0 0
-
+     
       type←n_type conv
       data←data n_data conv
       data ⎕NAPPEND tieno type
@@ -363,7 +367,7 @@
       ⎕IO←1
       (tieno conv count startbyte)←arg,(≢arg)↓0 0 ¯1 ⍬
       type←n_type conv
-
+     
       :If count≠¯1
           bytes←count×1+(count≠¯1)∧conv=5 ⍝ Double byte count for UTF-16
           r←⎕NREAD tieno type bytes,startbyte
@@ -373,9 +377,9 @@
       :Case 0 ⋄ r←∆av[1+⎕UCS r]
       :Case 4 ⋄ r←∆av[∆x4⍳r]
       :Case 5 ⋄ r←⎕UCS 256⊥⍉⌽(count 2)⍴⎕UCS r
-      :Case 8 
-      'Element-counted UTF-8 not supported' ⎕SIGNAL (count≠¯1)/11
-      r←'UTF-8'⎕UCS ⎕UCS r
+      :Case 8
+          'Element-counted UTF-8 not supported'⎕SIGNAL(count≠¯1)/11
+          r←'UTF-8'⎕UCS ⎕UCS r
       :EndSelect
     ∇
 
@@ -386,14 +390,14 @@
       type←n_type conv
       data←data n_data conv
      
-      r←data ⎕NREPLACE tieno startbyte type 
+      r←data ⎕NREPLACE tieno startbyte type
       r←0 0⍴0
     ∇
 
     ∇ {r}←data ∆NWRITE arg;tieno;startbyte;type;conv
     ⍝ Emulate APLX ⎕NWRITE
-    ⍝ startbyte=-1 not supported yet 
-
+    ⍝ startbyte=-1 not supported yet
+     
       :If 1∊⍴,arg ⍝ write as is
           r←data ⎕NAPPEND tieno
       :Else
@@ -432,7 +436,7 @@
 ⍝ arg is a 2 (search) or 3 (replace) element
       :If 900⌶0 ⋄ opt←0 ⋄ :EndIf  ⍝ simple search
       ((show type) flags)←2↑opt,4 ⍝ advance by 1 after search
-      
+     
       (text from to)←3↑arg,0
       fix←⊢
       :If norm←type=0  ⍝ turn regex meta char x into \x
@@ -452,7 +456,7 @@
           fix←from ⎕R to
       :EndIf
       :If flags>0
-          flags←⌽(9⍴2)⊤flags        
+          flags←⌽(9⍴2)⊤flags
           fix←fix ⎕OPT(0⊃flags)     ⍝ case insensitive?
           fix←fix ⎕OPT'ML'(1⊃flags) ⍝ stop after 1st
           :If search
@@ -488,10 +492,10 @@
     ∇ r←∆W
       r←↑⍤0⊢'SUNDAY' 'MONDAY' 'TUESDAY' 'WEDNESDAY' 'THURSDAY' 'FRIDAY' 'SATURDAY'
     ∇
-    
+
     ∇ r←∆WSSIZE
       r←2000⌶16
-    ∇     
+    ∇
 
     ∇ type←n_type conv;⎕IO;ix
     ⍝ Convert APLX native file conversion codes
@@ -512,14 +516,14 @@
       :Select conv
       :Case 0 ⋄ data←⎕UCS ¯1+∆av⍳data
       :Case 4 ⋄ data←∆x4[∆av⍳data]
-      :Case 5 ⋄ data←⎕UCS ,⌽⍉256 256⊤'UTF-16'⎕UCS data
+      :Case 5 ⋄ data←⎕UCS,⌽⍉256 256⊤'UTF-16'⎕UCS data
       :Case 8 ⋄ data←⎕UCS'UTF-8'⎕UCS data
       :EndSelect
     ∇
 
     ∇ r←n_get filename;tn
       tn←filename ⎕NTIE 0
-      r←⎕NREAD tn 80 (⎕NSIZE tn) 0
+      r←⎕NREAD tn 80(⎕NSIZE tn)0
       ⎕NUNTIE tn
     ∇
 
@@ -549,10 +553,10 @@
          
           if←/⍨                                ⍝ --- local fns ---
           isChar←{0 2∊⍨10|⎕DR 1/⍵}
-          lCase←{n←⍴l←'abcdefghijklmnopqrstuvwxyz' ⋄ ⎕IO←0 ⋄ ~∨/b←n>i←⎕A⍳s←⍵:⍵ ⋄ (b/s)←l[b/i] ⋄ s}
+          lCase←819⌶
          
           ⎕IO←⎕ML←1 ⋄ (NL CR)←⎕TC[2 3]         ⍝ --- local variables ---
-          params←,{⊂⍣(1∊≡,⍵)⌷⍵}params ⍝ nest if only a filename (string) as argument
+          params←,{⊂⍣(1=≡,⍵)⌷⍵}params ⍝ nest if only a filename (string) as argument
          
           :If ∨/nested←1<|≡¨params
     ⍝ Each criteria must be a 2 element nested array
