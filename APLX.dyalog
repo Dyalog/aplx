@@ -336,7 +336,7 @@
 
     ∇ r←∆NERROR
     ⍝ Similar to APLX ∆NERROR, but won't return the same texts
-      :If 3>≢⎕DMX.OSError
+      :If 0=≢3⊃⎕DMX.OSError
           r←'Insufficient data available'
       :Else
           r←⎕DMX.Message,': ',(⎕IO+2)⊃⎕DMX.OSError
@@ -444,7 +444,7 @@
       fix←⊢
       :If norm←type=0  ⍝ turn regex meta char x into \x
           fix←'{}[]()\^$|.?*+'∘{(⍵,b/'\')[⍋⍋b←≠\b/⍨1+b←⍵∊⍺]}
-          :andif 0=10|⎕dr to 
+          :AndIf 0=10|⎕dr to 
           to←(1+'\'=to)/to
       :EndIf
       show←0,norm↓1    ⍝ return also length for regex
