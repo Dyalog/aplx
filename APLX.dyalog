@@ -256,13 +256,16 @@
       r←⍎name
     ∇
 
-    ∇ r←{timeout}∆HOST string
+    ∇ r←{timeout}∆HOST string;v;⎕ML
     ⍝ ⎕HOST in APLX
     ⍝ timeout feature is not enabled
+      ⎕ML←1
+      v←⊃⊃'.'⎕WG'APLVersion'
       :If ''≡string ⍝ return OS type
-          r←('WLMA'⍳1↑⎕IO⊃'.'⎕WG'aplversion')⊃'WINDOWS' 'LINUX' 'MACOS' 'AIX' '?'
+          r←('WLMA'⍳v)⊃'WINDOWS' 'LINUX' 'MACOS' 'AIX' '?unknown'
       :Else
-          r←1↓↑,/(⎕UCS 13),¨⎕SH string~'↑↓' ⍝ always on client
+          r←1↓↑,/(⎕UCS 13),¨⎕SH ((∊string)~'↑↓'),(v≠'W')/' 2>&1; exit 0'
+          ⍝ Always on client, Never fail, return error messages as output
       :EndIf
     ∇
 
@@ -333,7 +336,7 @@
 
     ∇ r←∆NERROR
     ⍝ Similar to APLX ∆NERROR, but won't return the same texts
-      :If 0=⎕IO⊃⎕DMX.OSError
+      :If 3>≢⎕DMX.OSError
           r←'Insufficient data available'
       :Else
           r←⎕DMX.Message,': ',(⎕IO+2)⊃⎕DMX.OSError
