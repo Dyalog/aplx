@@ -10,6 +10,7 @@
  ⎕NUNTIE ⎕NNUMS
  ⎕FUNTIE ⎕FNUMS
  #.APLX.⎕EX'⍙MOUNTS'
+ isWIN←'W'=⊃⊃'.' ⎕WG 'APLVersion'
 
  FOLDER←{(1-⌊/(⌽⍵)⍳'\/')↓⍵}{⊃⍵[⍵[;1]⍳⎕THIS;4]}↑5177⌶⍬ ⍝ find loaded files' location
 
@@ -66,9 +67,11 @@
 ∇
 
 ∇ Test_Misc
-     
- assert'(System.DateTime)'≡⍕'.net'∆GETCLASS'System.DateTime'
-
+ 
+ :If isWIN
+     assert'(System.DateTime)'≡⍕'.net'∆GETCLASS'System.DateTime'
+ :EndIf
+ 
  assert ∆WSSIZE=2000⌶16
 
  assert 1 0 1≡∆VI'1 E 2'
@@ -80,9 +83,15 @@
 
  assert 7∊⍴∆AI
 
- assert 14=≢(⍕'.net'∆CALL'System.DateTime.Now')∩⎕D
-
- assert 2≤+/'<DIR>'⍷∆HOST'dir'
+ :If isWIN
+     assert 14=≢(⍕'.net'∆CALL'System.DateTime.Now')∩⎕D
+ :EndIf
+ 
+ :If isWin
+    assert 2≤+/'<DIR>'⍷∆HOST'dir'
+ :Else
+    ∘∘∘
+ :EndIf
 
  text←'Quack Quack Quack!'
  assert 2∊⍴ns.⎕NL-2 3⊣ns←0 ∆OV+z←↑'assert' 'text'
@@ -113,11 +122,10 @@ L10:{}∆ERX 0
 
 ∇
 
-∇ Test_ImportExport;filename;text;data;WIN;NL;t;CR
+∇ Test_ImportExport;filename;text;data;NL;t;CR
      
  1 ⎕NDELETE filename←FOLDER,'APLXtest.dat'
 
- WIN←'W'∊1 1⊃'.'⎕WG'aplversion'
  (CR NL)←⎕ucs 13 10
 
  text←'hello',∆R,'world'
