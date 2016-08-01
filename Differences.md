@@ -34,7 +34,7 @@ There are a handful of core language differences which are difficult to translat
 There are some significant differences in control structures:
 
 * APLX ```:Try``` is ```:Trap``` in Dyalog APL, and ```:CatchAll``` is ```:Else``` (converted)
-* APLX ```:CatchIf``` takes a Boolean argument. There is no catching on a specific error (number). The equivalend of ```:Case 11``` in a Dyalog ```:Trap``` statement would be ```:CatchIf  11=↑⎕LER``` in APLX.
+* APLX ```:CatchIf``` takes a Boolean argument. There is no catching on a specific error (number). The equivalent of ```:Case 11``` in a Dyalog ```:Trap``` statement would be ```:CatchIf  11=↑⎕LER``` in APLX.
 * ```:Repeat``` accepts a number of repetitions in APLX, but not in Dyalog APL
 * ```:Leave``` may take a label as argument in APLX, not in Dyalog APL
 
@@ -83,7 +83,7 @@ After all the bad news: fairly decent emulations are provided for a large number
 
 Emulation functions are provided for the primitives which can be made to behave the same way as APLX by setting ⎕ML. This allows a migrated application to be automatically converted to run with the default Dyalog Migration Level of 1, and for the use of these functions to be replaced over time. 
 
-      ∆EQ_ (≡), ∆LSHOE (⊂), ∆RSHOE (⊃), ∆UP, (↑)
+      ∆EQ_ (≡), ∆LSHOE (⊂), ∆RSHOE (⊃), ∆UP (↑)
 
 ### Emulation Not Required
 
@@ -93,7 +93,7 @@ We currently believe that the following system functions do not need emulation (
       ⎕NULL ⎕PFKEY ⎕THIS ⎕STOP ⎕TRACE ⎕TS ⎕UCS ⎕A
 
 ### Known Limitations of Emulations
-* Native file functions to not handle conversion codes for explicit byte swapping, 64-bit integers or single-precision (4-byte) floats
+* Native file functions do not handle conversion codes for explicit byte swapping, 64-bit integers or single-precision (4-byte) floats
 * ```∆IMPORT``` and ```∆EXPORT``` do not handle the ```slk``` format
 * ```∆CALL``` only handles Microsoft.Net
 * ```∆ERX``` This emulation is very partial; it is not really possible to fully emulate ⎕ERX
@@ -116,7 +116,7 @@ This is mostly a list of features which are not currently emulated, and comments
 * ⎕CS Provides similar functionality to ⎕ML, but completely different and mostly(?) irrelevant
 * ⎕CL	can be replaced by  (⍬⍴⎕LC)
 * ⎕CLASS has 2 nested vectors in Dyalog
-* ⎕CLASSES is missung but (⎕NL 9) provides similar functionality in Dyalog APL
+* ⎕CLASSES is missing but (⎕NL 9) provides similar functionality in Dyalog APL
 * ⎕CONF	has no equivalent in Dyalog
 * ⎕DR Similar but the exact functionality is different
 * ⎕EDIT Similar but not identical to Dyalog's ⎕ED
