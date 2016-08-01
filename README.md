@@ -2,7 +2,7 @@
 ##### Dated July 30th, 2016
 On July 11th 2016, MicroAPL announced the end of support for the APLX product. Since that date, Dyalog has been working with APLX users on developing tools to assist in the migration of existing applications from APLX to Dyalog APL. At this time, the tools are very much “work in progress” and will be updated frequently as we receive feedback.
 
-Comments and contributions are very welcome. Since Dyalog Ltd still has relatively limited knowledge of active APLX applications, we need input from APLX users to help us prioritise our work! Write to us at [aplx@dyalog.com](mailto:aplx@dyalog.com), or participate in [the forum section created for this purpose](http://www.dyalog.com/forum/viewforum.php?f=37) (note that membership not required in order to read the contents of the Dyalog forums).
+Comments and contributions are very welcome. Since Dyalog Ltd still has relatively limited knowledge of active APLX applications, we need input from APLX users to help us prioritise our work! Write to us at [aplx@dyalog.com](mailto:aplx@dyalog.com), or participate in [the forum section created for this purpose](http://www.dyalog.com/forum/viewforum.php?f=37) (note that membership is not required in order to read the contents of the Dyalog forums).
 
 **Important:** *All of the tools and documents and other information contained in this repository are provided free of charge and without warranty of any kind. Dyalog will endeavour to correct any defects that are reported, but this is a community effort and not a supported product from Dyalog Ltd.* 
 
@@ -29,7 +29,7 @@ At the moment, the following resources are available or under development:
 
 **```]in``` user command:** This user command is available with all standard installations of Dyalog APL v15.0 or later. It can import files in APL Transfer format (.ATF) that are created by the ```)out``` system command which is found in many APL systems, including APLX. For increasing amounts of online help, type ```]?in```,  ```]??in``` (and so on) in a Dyalog session.
 
-**Source Code Translation Tool:** The APLX workspaces ```xfrpx.aws``` and ```xfrpcV5.aws``` (for APLX v5) are APLX versions of Dan Baronets xfrpc tool, which creates “enhanced” transfer files. The ```]in``` user command recognises these files and will perform translation of APLX statements into Dyalog equivalents, including references to the emulation functions.
+**Source Code Translation Tool:** The APLX workspaces ```xfrpx.aws``` and ```xfrpcV5.aws``` (for APLX v5) are APLX versions of Dan Baronet's xfrpc tool, which creates “enhanced” transfer files. The ```]in``` user command recognises these files and will perform translation of APLX statements into Dyalog equivalents, including references to the emulation functions.
 
 **Test Cases:** The file [TestAPLX.dyalog]() contains a collection of tests which put the emulations through their paces. If you have problems with any emulated features, a **VERY GOOD THING TO DO** is to contribute a failing test which someone will hopefully fix! 
 
@@ -52,7 +52,7 @@ You export your workspace using ```)OUT``` in APLX, and then import it with ```]
 
 The conversions are controlled by the file [xfrdefs.txt](xfrdefs.txt); if you are dissatisfied with these definitions and you are brave, you can experiment with adding lines to this file (in the section following ```:APX```), or perhaps more likely, you can remove conversions that you do not wish to make.
 
-Once you have made any changes that you wish to make, copy the latest versions of the files ```xfrcode.dws```, ```APLX.dyalog```, and ```xfrdefs.txt``` from the repository to the Dyalog "ws" folder (```xfrcode.dws``` will be there already, it is used by by ```]in``` user command, it is best to update it just in case you have an older version).
+Once you have made any changes that you wish to make, copy the latest versions of the files ```xfrcode.dws```, ```APLX.dyalog```, and ```xfrdefs.txt``` from the repository to the Dyalog "ws" folder (```xfrcode.dws``` will be there already, it is used by the ```]in``` user command, it is best to update it just in case you have an older version).
 
 Now we are ready to do the transfer: In APLX, ```)Load``` the workspace to be transferred, then:
 
