@@ -87,7 +87,7 @@
      assert 14=≢(⍕'.net'∆CALL'System.DateTime.Now')∩⎕D
  :EndIf
  
- :If isWin
+ :If isWIN
     assert 2≤+/'<DIR>'⍷∆HOST'dir'
  :Else
     ∘∘∘

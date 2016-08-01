@@ -444,6 +444,8 @@
       fix←⊢
       :If norm←type=0  ⍝ turn regex meta char x into \x
           fix←'{}[]()\^$|.?*+'∘{(⍵,b/'\')[⍋⍋b←≠\b/⍨1+b←⍵∊⍺]}
+          :andif 0=10|⎕dr to 
+          to←(1+'\'=to)/to
       :EndIf
       show←0,norm↓1    ⍝ return also length for regex
       add1←1,norm↓0    ⍝ for ⎕IO adjustment later
