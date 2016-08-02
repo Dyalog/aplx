@@ -478,7 +478,7 @@
     ⍝ We need to adjust for the caller's ⎕IO
       :If search
           :If ⎕THIS=1⍴⎕RSI ⋄ io←1↑3⊃⎕STATE'⎕io'
-          :Else ⋄ io←⎕RSI[1].⎕IO
+          :Else ⋄ io←⎕RSI[0].⎕IO
           :EndIf
           r←r+(⍴r)⍴add1∧io
       :EndIf
