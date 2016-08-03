@@ -15,7 +15,7 @@ In addition to the emulated features, and language constructs which can be autom
 ###Language Differences
 There are a handful of core language differences which are difficult to translate automatically and will probably require manual recoding:
 
-   * Brackets bind differently: `A[2]B[1]` is equivalent to `(A[2])(B[1])` in APLX, but `((A[2])B)[1]` in Dyalog APL.
+   * Brackets bind differently: `A[2]B[1]` is equivalent to `(A[2])(B[1])` in APLX, but `((A[2])B)[1]` in Dyalog APL. It is difficult to detect all cases of this by searching source code; Dyalog is experimenting with tools which will be able to detect the issue at runtime.
    * Slashes (`/` and `⌿`) are strictly operators in APLX, but in Dyalog APL they are functions when there is an array on the left. This gives different results when slashes are combined with other operators. For example `1 0 1/¨⍳3` returns `(1 1)(2 2)(3 3)` in APLX and `(,1)⍬(,3)` in Dyalog APL. The equivalent expression in Dyalog APL would be `1 0 1∘/¨⍳3`.
    * In Dyalog APL, with the default Migration Level (`⎕ML←1`), monadic `↑` is *mix*, `⊃` is *first*, and `≡` (*depth*) works slightly differently from APLX.
    * Partitioned enclose (dyadic `⊂`), works differently from APLX unless ⎕ML←3.

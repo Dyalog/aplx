@@ -273,7 +273,7 @@
       Z←⎕UCS 1
     ∇
 
-    ∇ Z←∆IMPORT V;file;type;⎕IO ⍝ Emulate APLX ⎕import
+    ∇ Z←∆IMPORT V;file;type;⎕IO;M ⍝ Emulate APLX ⎕import
       ⎕IO←1
       :If 1=≡,V ⋄ V←V({(-⊥⍨'.'≠⍵)↑⍵}V) ⋄ :EndIf ⍝ use extension as type if simple string
       file←1⊃V ⋄ type←819⌶2⊃V ⍝ Lowercase
@@ -281,10 +281,10 @@
       :Select type
       :Case 'txt'
           Z←n_get file
-          :If 'W'=1 1⊃'.'⎕WG'aplversion'
-              Z←(~¯1⌽Z⍷⍨⎕UCS 13 10)/Z ⍝ change CRLF into CR
+          :If ∨/M←(⎕UCS 13 10)⍷Z ⍝ Any CRLFs?
+              Z←(~¯1⌽M)/Z ⍝ change CRLF becomes CR
           :Else
-              ((Z=⎕UCS 10)/Z)←⎕UCS 13 ⍝ APLX return CR
+              ((Z=⎕UCS 10)/Z)←⎕UCS 13 ⍝ APLX return CR also for LF
           :EndIf
       :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'
           type←(1+'6'=¯1↑type)⊃'UTF-8' 'UTF-16'

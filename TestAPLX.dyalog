@@ -132,6 +132,9 @@ L10:{}∆ERX 0
  text ∆EXPORT filename'txt'
  assert text≡t←∆IMPORT filename'txt'
  assert 1 0≡+/CR NL∘.=t←n_get filename  ⍝ there should be only 1 CR
+ 
+ ('hello',∆R,∆L,'world') ∆EXPORT filename'txt' ⍝ Now put a CRLF in
+ assert text≡t←∆IMPORT filename'txt'          ⍝ Should still get CR back
 
  text←'⍋⍒'
  text ∆EXPORT filename'utf8'
