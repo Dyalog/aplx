@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Aplx by Dyalog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Aplx</h1>
+      <h2 class="project-tagline">Tools to help migrate from APLX to Dyalog APL</h2>
+      <a href="https://github.com/Dyalog/aplx" class="btn">View on GitHub</a>
+      <a href="https://github.com/Dyalog/aplx/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/Dyalog/aplx/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="aplx-to-dyalog-migration-tools" class="anchor" href="#aplx-to-dyalog-migration-tools" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>APLX to Dyalog Migration Tools</h1>
+
+<p>On July 11th 2016, MicroAPL announced the end of support for the APLX product. Since that date, Dyalog has been working with APLX users on developing tools to assist in the migration of existing applications from APLX to Dyalog APL. At this time, the tools are very much “work in progress” and will be updated frequently as we receive feedback.</p>
+
+<p>Comments and contributions are very welcome. Since Dyalog Ltd still has relatively limited knowledge of active APLX applications, we need input from APLX users to help us prioritise our work! Write to us at <a href="mailto:aplx@dyalog.com">aplx@dyalog.com</a>, or participate in <a href="http://www.dyalog.com/forum/viewforum.php?f=37">the forum section created for this purpose</a> (note that membership is not required in order to read the contents of the Dyalog forums).</p>
+
+<p><strong>Important:</strong> <em>All of the tools and documents and other information contained in this repository are provided free of charge and without warranty of any kind. Dyalog will endeavour to correct any defects that are reported, but this is a community effort and not a supported product from Dyalog Ltd.</em> </p>
+
+<h3>
+<a id="acknowledgements" class="anchor" href="#acknowledgements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Acknowledgements</h3>
+
+<p>Many thanks to <em>Jay Whipple III</em> for suffering through the first versions of the emulations - all APLX users who subsequently use these tools should be grateful for his pioneering spirit and prepare to buy him the drink of his choice at the next User Meeting!</p>
+
+<p>Thanks to <em>Dan Baronet</em> for contributing the "xfrpc" tools which he has worked on for decades.</p>
+
+<p><strong>NB:</strong> The tools remain in a state of rapid flux. Feedback and contributions are very welcome!
+ Did we say that already?</p>
+
+<h2>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>At the moment, the following resources are available or under development:</p>
+
+<p><strong>Updates to Dyalog v15.0:</strong> Builds of Version 15.0 dated July 29th 2016 or later (that is 15.0.27982 or later, which appear in the second issue of the 15.0 installation images), include the following APLX-related improvements:” :</p>
+
+<ul>
+<li>A fix to an issue with communication between the interpreter and the RIDE, which was causing slow execution of code when using RIDE as the development environment.</li>
+<li>
+<code>⎕NREAD</code> now accepts <code>¯1</code> for the number of elements to read, meaning read to end of file</li>
+<li>
+<code>⎕NREPLACE</code> accepts <code>¯1</code> as a position, meaning "the current position"</li>
+</ul>
+
+<p><strong>List of Differences:</strong> A document containing a <a href="Differences.md">list of differences</a> between APLX and Dyalog APL, and a discussion of strategies for dealing with them.</p>
+
+<p><strong>Emulations of APLX Features:</strong> The file <a href="APLX.dyalog">APLX.dyalog</a> defines a Dyalog namespace containing emulations for APLX primitives and system functions that are different or do not exist at all in Dyalog APL.</p>
+
+<p><strong><code>]in</code> user command:</strong> This user command is available with all standard installations of Dyalog APL v15.0 or later. It can import files in APL Transfer format (.ATF) that are created by the <code>)out</code> system command which is found in many APL systems, including APLX. For increasing amounts of online help, type <code>]?in</code>,  <code>]??in</code> (and so on) in a Dyalog session.</p>
+
+<p><strong>Source Code Translation Tool:</strong> The APLX workspaces <code>xfrpx.aws</code> and <code>xfrpcV5.aws</code> (for APLX v5) are APLX versions of Dan Baronet's xfrpc tool, which creates “enhanced” transfer files. The <code>]in</code> user command recognises these files and will perform translation of APLX statements into Dyalog equivalents, including references to the emulation functions.</p>
+
+<p><strong>Test Cases:</strong> The file <a href="">TestAPLX.dyalog</a> contains a collection of tests which put the emulations through their paces. If you have problems with any emulated features, a <strong>VERY GOOD THING TO DO</strong> is to contribute a failing test which someone will hopefully fix! </p>
+
+<h2>
+<a id="getting-set-up" class="anchor" href="#getting-set-up" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Set Up</h2>
+
+<p>All the materials developed in this process are available as open source tools via github, and can be found at <a href="">http://github.com/Dyalog/aplx</a>. The easiest way to get hold of a local copy is to download the <a href="https://github.com/Dyalog/aplx/archive/master.zip">zip package</a>, if you want to participate actively or be able to easily view the revision history as new versions are developed, we suggest that you install a GUI front-end for git, for example <a href="https://www.sourcetreeapp.com/">SourceTree</a> (which is used within the Dyalog development team) or use the <a href="https://git-scm.com/downloads">git gui</a>, and clone the repository.</p>
+
+<h3>
+<a id="running-the-tests" class="anchor" href="#running-the-tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running the Tests</h3>
+
+<p>Once you have the materials downloaded (for example to a folder called <code>/Users/mkrom/aplx</code>), it is suggested that you load and run the test script:</p>
+
+<pre><code>    ⎕FIX 'file:///Users/mkrom/aplx/TestAPLX.dyalog'
+    TestAPLX.Run 0
+APLX tests completed
+</code></pre>
+
+<p>You can now edit the TestAPLX and APLX namespaces (the latter was brought in automatically thanks to a :Require statement in TestAPLX) and add new emulations or test cases - and submit proposals for extensions.</p>
+
+<h2>
+<a id="bringing-your-code-across" class="anchor" href="#bringing-your-code-across" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Bringing your Code Across</h2>
+
+<p>You export your workspace using <code>)OUT</code> in APLX, and then import it with <code>]in</code> under Dyalog APL, and make your own modifications to your source code in order to call the emulation functions. Alternatively, you can use the <code>xfrpc</code> tool to automatically modify the code to call emulation functions and make other changes to the code.</p>
+
+<p>The conversions are controlled by the file <a href="xfrdefs.txt">xfrdefs.txt</a>; if you are dissatisfied with these definitions and you are brave, you can experiment with adding lines to this file (in the section following <code>:APX</code>), or perhaps more likely, you can remove conversions that you do not wish to make.</p>
+
+<p>Once you have made any changes that you wish to make, copy the latest versions of the files <code>xfrcode.dws</code>, <code>APLX.dyalog</code>, and <code>xfrdefs.txt</code> from the repository to the Dyalog "ws" folder (<code>xfrcode.dws</code> will be there already, it is used by the <code>]in</code> user command, it is best to update it just in case you have an older version).</p>
+
+<p>Now we are ready to do the transfer: In APLX, <code>)Load</code> the workspace to be transferred, then:</p>
+
+<pre><code>     )COPY /Users/mkrom/aplx/xfrpcV5.aws
+SAVED  2014-02-01 23.21.35
+
+     ∆xfrto '/Users/mkrom/myws'
+* XFR version 3.11
+1243 objects transferred
+</code></pre>
+
+<p>This will create the file myws.xpw. Next, start Dyalog APL and import the file.</p>
+
+<pre><code>    ]in /Users/mkrom/myws.xpw -trans=2 -replace
+* XFR version 3.88
+Using the external file "...[dyalog folder]...\ws\xfrdefs.txt" for translations.
+APX3.11 20160729 223656; WS=CLEAR WS
+#.APLX defined from file "...[dyalog folder]...\ws\APLX.dyalog"
+1243 objects defined
+</code></pre>
+
+<p>At this point, <code>APLX</code> will be a namespace containing the emulation functions, and <code>⎕PATH</code> will have been set to <code>#.APLX</code>.</p>
+
+<h2>
+<a id="running-the-same-code-in-aplx-and-dyalog-apl" class="anchor" href="#running-the-same-code-in-aplx-and-dyalog-apl" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running the same code in APLX and Dyalog APL</h2>
+
+<p>The files ReadCovers/FixCovers are work in progress, with the intention of creating cover-functions in both APLX (for real system functions) and Dyalog APL (for emulation functions), so that the same application code can run on both systems. This will be useful for application which are in active development under APLX while migration work is in progress. This code is not yet working.</p>
+
+<h2>
+<a id="further-reading" class="anchor" href="#further-reading" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Further Reading</h2>
+
+<p>See the list and discussion of differences between APLX and Dyalog APL in the file <a href="Differences.md">Differences.md</a>.</p>
+
+<h2>
+<a id="comments-and-questions" class="anchor" href="#comments-and-questions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Comments and Questions</h2>
+
+<p>Please send question and comments to <a href="mailto:aplx@dyalog.com">aplx@dyalog.com</a>, or the <a href="http://www.dyalog.com/forum/viewforum.php?f=37">Dyalog Forums</a>, or sign up to GitHub and submit comments and change requests there!</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/Dyalog/aplx">Aplx</a> is maintained by <a href="https://github.com/Dyalog">Dyalog</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
