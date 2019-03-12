@@ -1,4 +1,4 @@
-﻿:Namespace APLX
+:Namespace APLX
 ⍝ Dyalog cover functions for APLX  V1.12
 
 ⍝ This namespace can be added as is in a workspace or individual items )COPYed.
@@ -151,52 +151,42 @@
       Z←¯1↓↑,/⎕DM,¨⎕UCS 13
     ∇
 
-    ∇ r←∆ERX label ⍝ ⎕ERX in APLX
-     ⍝ There are many problems with this program:
-     ⍝ the line # given as arg is where control should be returned
-     ⍝ in the calling program. For that to work ⎕TRAP should be local
-     ⍝ and the trap set to  0 'C' '→nn' NOT  0 'E' '→nn' but
-     ⍝ there is no way to localize ⎕TRAP above so using 'E' MAY
-     ⍝ work but there is no guaranty.
-      r←⎕TRAP ⍝ this is not a label
-      :If 0∊1↑0⍴label ⍝ a number?
-          :If 0∊label ⋄ ⎕TRAP←0⍴⎕TRAP
-          :Else ⋄ ⎕TRAP←0 'E'('→',⍕label)
-          :EndIf
-      :Else
-          ⎕TRAP←label ⍝ assume valid ⎕TRAP argument
-      :EndIf
+    ∇ ∆ERX←∆ERX ⍝ Emulate APLX ⎕ERX
+      ∆ERX←⍎'⎕SHADOW''⎕TRAP''⋄(⎕TRAP←{1<≢∊⍵:⍵ ⋄ (×⍵)⍴⊂0 ''E'' (''→'',⍕⍵)}',⍕,{')⊢⎕TRAP'}
     ∇
 
-    ∇ Z←data ∆EXPORT V;file;type;⎕IO
+    ∇ Z←data ∆EXPORT V;file;type;⎕IO;sep
     ⍝ Emulate APLX ⎕export
       ⎕IO←1
       :If 1=≡,V ⋄ V←V({(-⊥⍨'.'≠⍵)↑⍵}V) ⋄ :EndIf ⍝ use extension as type if simple string
-      file←1⊃V
-      type←819⌶2⊃V ⍝ Lowercase
-     
-      1 ⎕NDELETE file
+      (file type)←L@2⊢V ⍝ Lowercase
      
       :Select type
-      :Case 'txt'
     ⍝ data can be anything. It must be formatted if not character already.
-          :If 326≠⎕DR data
-              data←1↓,(⎕UCS 13),⍕data
-          :EndIf
-          Z←data n_put file
-      :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'
-          type←(1+'6'=¯1↑type)⊃'UTF-8' 'UTF-16'
-          data←⎕UCS type ⎕UCS data
-          Z←data n_put file
+      :CaseList 'txt' 'utf8' 'utf-8' 'utf16' 'utf-16'
+          data←n_fmt data
+          type←1⊃'txt' '\d+'⎕S'Windows-1252' 'UTF-&'⊢type
       :CaseList 'csv' 'tsv'
-          Z←LoadData.SaveTEXT data file(('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
+          :If 2≠≢⍴data
+          :OrIf 0 2∊⍨10|⎕DR data
+              'Data must be nested or numeric matrix'⎕SIGNAL 11
+          :EndIf
+          data←n_fmt¨data
+          sep←('ct'⍳L 1⊃type)⊃',',⎕UCS 9
+          data←data ⎕CSV⍠'Separator'sep⊢''
+          type←'Windows-1252'
       :Case 'xml'
-          Z←(⊂⎕XML data)⎕NPUT file'utf-8'
+          data←⎕XML data
+          type←'UTF-8'
       :Else
           'Unknown file type'⎕SIGNAL 11
       :EndSelect
-      Z←0 0⍴0
+      data←'¯'⎕R'-'⊢data
+      data type ⎕NPUT file 1
+      Z←0 0⍴''
     ∇
+
+    n_fmt←{1↓,(⎕UCS 10),⎕FMT'.*'⎕R'&'⍠'EOL' 'CR'⍠'NEOL' 1⍤1⍕data}
 
     ∇ r←{la}∆FDROP arg
     ⍝ ⍗ in APLX
@@ -264,7 +254,7 @@
       :If ''≡string ⍝ return OS type
           r←('WLMA'⍳v)⊃'WINDOWS' 'LINUX' 'MACOS' 'AIX' '?unknown'
       :Else
-          r←1↓↑,/(⎕UCS 13),¨⎕SH ((∊string)~'↑↓'),(v≠'W')/' 2>&1; exit 0'
+          r←1↓↑,/(⎕UCS 13),¨⎕SH((∊string)~'↑↓'),(v≠'W')/' 2>&1; exit 0'
           ⍝ Always on client, Never fail, return error messages as output
       :EndIf
     ∇
@@ -273,30 +263,25 @@
       Z←⎕UCS 1
     ∇
 
-    ∇ Z←∆IMPORT V;file;type;⎕IO;M ⍝ Emulate APLX ⎕import
+    ∇ Z←∆IMPORT V;file;type;⎕IO;Post;_ ⍝ Emulate APLX ⎕import
       ⎕IO←1
       :If 1=≡,V ⋄ V←V({(-⊥⍨'.'≠⍵)↑⍵}V) ⋄ :EndIf ⍝ use extension as type if simple string
-      file←1⊃V ⋄ type←819⌶2⊃V ⍝ Lowercase
+      (file type)←L@2⊢V
      
       :Select type
-      :Case 'txt'
-          Z←n_get file
-          :If ∨/M←(⎕UCS 13 10)⍷Z ⍝ Any CRLFs?
-              Z←(~¯1⌽M)/Z ⍝ change CRLF becomes CR
-          :Else
-              ((Z=⎕UCS 10)/Z)←⎕UCS 13 ⍝ APLX return CR also for LF
-          :EndIf
-      :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'
-          type←(1+'6'=¯1↑type)⊃'UTF-8' 'UTF-16'
-          Z←n_get file
-          Z←type ⎕UCS ⎕UCS Z
+      :CaseList 'txt' 'utf8' 'utf-8' 'utf16' 'utf-16'
+          _←1⊃'txt' '\d+'⎕S'Windows-1252' 'UTF-&'⍠1⊢type
+          Post←''⎕R''⍠'EOL' 'CR'⍠'NEOL'
       :CaseList 'csv' 'tsv'
-          Z←LoadData.LoadTEXT file(('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
+          _←⊢
+          Post←⎕CSV⍠'Separator'(('ct'=1⊃type)/',',⎕UCS 9){⍵'S'}
       :Case 'xml'
-          Z←⎕XML 1⊃⎕NGET file'UTF-8'
+          _←⊢
+          Post←⎕XML
       :Else
           'Unknown file type'⎕SIGNAL 11
       :EndSelect
+      Z←Post 1⊃_ ⎕NGET file
     ∇
 
     ∇ Z←∆L ⍝ Emulate APLX ⎕L
@@ -438,13 +423,13 @@
 ⍝ Mimic APLX' ⎕ss function
 ⍝ arg is a 2 (search) or 3 (replace) element
       :If 900⌶0 ⋄ opt←0 ⋄ :EndIf  ⍝ simple search
-      ((show type) flags)←2↑opt,4 ⍝ advance by 1 after search
+      ((show type)flags)←2↑opt,4 ⍝ advance by 1 after search
      
       (text from to)←3↑arg,0
       fix←⊢
       :If norm←type=0  ⍝ turn regex meta char x into \x
           fix←'{}[]()\^$|.?*+'∘{(⍵,b/'\')[⍋⍋b←≠\b/⍨1+b←⍵∊⍺]}
-          :AndIf 0=10|⎕dr to 
+      :AndIf 0=10|⎕DR to
           to←(1+'\'=to)/to
       :EndIf
       show←0,norm↓1    ⍝ return also length for regex
@@ -526,178 +511,17 @@
       :EndSelect
     ∇
 
-    ∇ r←n_get filename;tn
-      tn←filename ⎕NTIE 0
-      r←⎕NREAD tn 80(⎕NSIZE tn)0
-      ⎕NUNTIE tn
+    ∆LEFT←{6::z←0 0⍴0 ⋄ ⍺} ⍝ ⊣
+
+    ∇ cl←∆CL ⍝ Emulate APLX ⎕CL Current Line
+      cl←2⊃50100⌶2
     ∇
 
-    ∇ r←data n_put filename;tn
-      tn←filename ⎕NCREATE 0
-      r←data ⎕NAPPEND tn 80
-      ⎕NUNTIE tn
-    ∇
-
-
-    :Namespace LoadData
-⍝ Functions copied from distributed workspace LoadData.dws
-
-        ∇ data←LoadTEXT params;file;string;cr;Quote;tmp;sep;⎕ML;⎕IO;vi;Sep;fget;nested;filename;specialchars;NL;CR;cols;header;rows;ncol;lCase;criteria;if;isChar;n;csv;text;num
-⍝ Load data from a TEXT file                                   danb 2008
-         
-⍝ Arguments are:  Filename [SpecialChars [SelectionCriteria]]
-⍝ Selection criteria is made in the form
-⍝ ('Column' or 'Row' followed by a series of numbers or column heading)
-⍝ Example:
-⍝   LoadTEXT '\temp\myfile.csv' ';' ('columns' 'name,age,telephone')  ⍝ CSV file using ';' as delimiter
-⍝   LoadTEXT '\temp\myfile.txt' (12 5 6 256) ('rows' (2×⍳999))        ⍝ keep every 2nd row of fixed fields width file
-         
-⍝ This version assumes the data is delimited by a specific character (default comma)
-⍝ and that string that includes the separator is surrounded by quotes (default ")
-⍝ It will complain if anything seems out of order.
-         
-          if←/⍨                                ⍝ --- local fns ---
-          isChar←{0 2∊⍨10|⎕DR 1/⍵}
-          lCase←819⌶
-         
-          ⎕IO←⎕ML←1 ⋄ (NL CR)←⎕TC[2 3]         ⍝ --- local variables ---
-          params←,{⊂⍣(1=≡,⍵)⌷⍵}params ⍝ nest if only a filename (string) as argument
-         
-          :If ∨/nested←1<|≡¨params
-    ⍝ Each criteria must be a 2 element nested array
-              ⎕SIGNAL 5 if 2∨.≠↑⍴¨tmp←nested/params
-              criteria←lCase∘⊃¨tmp
-              ⎕SIGNAL 11 if~∧/criteria∊'columns' 'rows'  ⍝ only accept these
-    ⍝ If a character column specification is supplied we assume there is a header
-              header←isChar 2⊃(criteria⍳⊂'columns')⊃tmp,⊂0 0
-          :Else
-              criteria←⍴header←0
-          :EndIf
-         
-          (filename specialchars)←2↑(~nested)/params
-          data←0 0⍴0
-         
-⍝ This version assumes v15.0 or later:
-          fget←{z←¯1↓1⊃⎕NGET ⍵}
-         
-          :If ~0∊⍴string←fget filename
-    ⍝ There can be 3 types of line delimiter: NL, CR, CR+LF
-    ⍝ CR,NL and lone NLs will be turned into CRs
-              string←CR,(~CR NL⍷string)/string
-              ((string=NL)/string)←CR
-              cr←CR=string                         ⍝ line delimiters
-              :If csv←isChar specialchars          ⍝ fixed field or CSV?
-                  (Sep Quote)←',"'{(⍴⍺)↑⍵,(⍴⍵)↓⍺}specialchars~' '
-                  text←≠\string=Quote              ⍝ string
-                  cr←cr>text
-                  sep←cr∨text<string=Sep           ⍝ items separator
-              :Else
-                  tmp←(+/specialchars)⍴0 ⋄ tmp[+\specialchars]←1
-                  sep←∊(⍴¨cr⊂cr)↑¨⊂1 0,tmp         ⍝ first field has NL
-                  text←0 ⋄ Quote←''                ⍝ no text or quotes to remove
-              :EndIf
-    ⍝ Take care of doubled quotes
-              data←{¯1↑q←⍵∊Quote:¯1↓⍵/⍨q⍲≠\q ⋄ ⍵}¨↑(sep/cr)⊂(sep/cr∨csv)↓¨sep⊂string
-    ⍝ We know there is at least ONE row
-              tmp←↑(sep/cr)⊂1∊¨sep⊂text            ⍝ Quote used?
-    ⍝ Columns of numbers are to be returned as such
-              :If ∨/cols←~∧⌿tmp                    ⍝ columns that don't use quotes
-                  num←cols/data
-                  (∊num)←{w←⍵ ⋄ ((w='-')/w)←'¯' ⋄ w}∊num ⍝ treat - as ¯
-                  num←(⊂,1)≡∘⊃¨tmp←⎕VFI¨num        ⍝ all the numeric items
-                  :If header<∨/ncol←∧⌿num          ⍝ do we have full length columns of numbers?
-                      rows←1                       ⍝ then change all rows
-                  :Else
-                      header∨←n←∨/ncol←∧⌿1 0↓num   ⍝ maybe if we remove the first line
-                      rows←0,1↓(⊃⍴data)⍴n
-                  :EndIf
-                  (rows⌿ncol/cols/data)←2 1∘⊃¨rows⌿ncol/tmp
-              :EndIf
-          :EndIf
-         
- ⍝ Take care of constraints
-          :If 0<⍴criteria
-              :If ∨/tmp←'columns'∘≡¨criteria
-                  :If ' '∊1↑0⍴cols←2⊃(tmp⍳1)⊃nested/params
-                      cols←(lCase¨data[1;])⍳1↓¨(tmp=',')⊂tmp←',',cols
-                  :EndIf
-                  data←data[;cols]
-              :EndIf
-              :If ∨/tmp←'rows'∘≡¨criteria
-                  rows←header+2⊃(tmp⍳1)⊃nested/params ⍝ row numbers start at 1; header does not count
-                  data←data[(rows≤1↑⍴data)/rows;]     ⍝ keep valid rows only
-              :EndIf
-          :EndIf
-        ∇
-
-        ∇ rc←{options}SaveTEXT params;file;⎕ML;⎕IO;NL;CR;lCase;if;isChar;CRLF;LF;data;fdel;rdel;stream;sz;tie;win;Q
-⍝ Save data to a TEXT file                                   danb 2008 V1.1
-         
-⍝ Arguments are:  Data Filename [Separators]
-⍝ The default separators is ',' CRLF (for Windows, NL for Unix)
-⍝ If the separator is found in the data it is enclosed in '"', therefore '"' must NOT appear in the data.
-⍝ If a fixed length is instead given for each column then any character may exist in the data.
-⍝ It will complain if anything seems out of order.
-         
-⍝ The options are: 0 (default): create new file, 1:overwrite if necessary
-⍝ The function returns 0 if all went well or a return code (1=file exists)
-         
-⍝ Example:
-⍝   SaveTEXT data '\temp\myfile.csv' ';'           ⍝ CSV file using ';' as delimiter
-⍝   SaveTEXT data '\temp\myfile.txt' ',' LF        ⍝ , delimited file using LF as record delimiter
-⍝   SaveTEXT data '\temp\myfile.wxyz' (23 32 21)   ⍝ fixed width delimited file using CRLF as record delimiter
-⍝   SaveTEXT data '\temp\myfile.wxyz' (3 9 8) 133  ⍝ fixed width delimited file using #133 as record delimiter
-         
-          if←/⍨                       ⍝ --- local fns ---
-          isChar←{0 2∊⍨10|⎕DR 1/⍵}
-          lCase←{n←⍴l←'abcdefghijklmnopqrstuvwxyz' ⋄ ⎕IO←0 ⋄ ~∨/b←n>i←⎕A⍳s←⍵:⍵ ⋄ (b/s)←l[b/i] ⋄ s}
-         
-          ⎕IO←⎕ML←1                   ⍝ --- local variables ---
-          win←'W'∊⊃⊃'.'⎕WG'aplversion'
-          (CR LF)←CRLF←⎕UCS(~win)↓13 10 ⋄ Q←'"'
-          (data file fdel rdel)←params,(⍴params)↓0 0 ','CRLF ⍝ 4 arguments
-         
-          :If 0∊⍴data
-              stream←''
-          :Else ⍝ something to do
-              :If isChar fdel
-                  data←{∨/(fdel,Q)∊⍵:Q,((1+Q=⍵)/⍵),Q ⋄ ⍵}¨⍕¨data ⍝ add double quotes around
-                  data←1↓¨,/fdel,¨data
-              :Else
-                  sz←⍴data←(¯2↑1,⍴data)⍴data ⍝ ensure matrix
-                  fdel←fdel×¯1*~isChar¨data[⊃sz;] ⍝ better be all the same
-                  data←,/(sz⍴fdel)↑¨data
-              :EndIf
-    ⍝ If the record separator is numeric we turn it into text
-              :If ~isChar rdel ⋄ rdel←⎕UCS rdel ⋄ :EndIf
-              stream←(⍴,rdel)↓∊rdel∘,¨data
-          :EndIf
-         
-⍝ This version does without .Net
-          rc←1
-          :Trap 22
-              :If 0=⎕NC'options' ⋄ options←0 ⋄ :EndIf
-              :If 1∊options
-                  {22:: ⋄ ⍵ ⎕NERASE ⍵ ⎕NTIE 0}file
-              :EndIf
-              tie←file ⎕NCREATE 0   ⍝ the file must NOT exist
-⍝ Change the stream into UTF-8 format
-              stream←¯17 ¯69 ¯65,{⍵-256×127<⍵}'UTF-8'⎕UCS stream
-⍝ Write out
-              stream ⎕NAPPEND tie 83
-              ⎕NUNTIE tie
-              rc←0
-          :EndTrap
-        ∇
-
-    :EndNamespace ⍝ LoadData
+    ∆ERS←⎕SIGNAL∘99
 
     ⍝ Things to watch for:
-    ⍝ ⊣ is {6::z←0 0⍴0 ⋄ ⍺}
-    ⍝ ⎕CL is (⍬⍴⎕lc)
     ⍝ ⎕CLASSES is (⎕nl-9.4 9.6)
-    ⍝ ⎕ERS is 99 ⎕SIGNAL⍨...
-    ⍝ ⎕ERX X is ⎕TRAP←0 'E' ('→',⍕X) with ⎕trap localized
 
+    L←819⌶ ⍝ Lowercase
 
 :EndNameSpace
