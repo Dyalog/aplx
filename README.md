@@ -6,7 +6,7 @@ Comments and contributions are very welcome. Since Dyalog Ltd still has relative
 
 **Important:** *All of the tools and documents and other information contained in this repository are provided free of charge and without warranty of any kind. Dyalog will endeavour to correct any defects that are reported, but this is a community effort and not a supported product from Dyalog Ltd.* 
 
-###Acknowledgements
+### Acknowledgements
 Many thanks to *Jay Whipple III* for suffering through the first versions of the emulations - all APLX users who subsequently use these tools should be grateful for his pioneering spirit and prepare to buy him the drink of his choice at the next User Meeting!
 
 Thanks to *Dan Baronet* for contributing the "xfrpc" tools which he has worked on for decades.
@@ -14,7 +14,7 @@ Thanks to *Dan Baronet* for contributing the "xfrpc" tools which he has worked o
 **NB:** The tools remain in a state of rapid flux. Feedback and contributions are very welcome!
  Did we say that already?
 
-##Overview
+## Overview
 At the moment, the following resources are available or under development:
 
 **Updates to Dyalog v15.0:** Builds of Version 15.0 dated July 29th 2016 or later (that is 15.0.27982 or later, which appear in the second issue of the 15.0 installation images), include the following APLX-related improvements:” :
@@ -74,13 +74,13 @@ This will create the file myws.xpw. Next, start Dyalog APL and import the file.
      
 At this point, `APLX` will be a namespace containing the emulation functions, and `⎕PATH` will have been set to `#.APLX`.
 
-##Running the same code in APLX and Dyalog APL
+## Running the same code in APLX and Dyalog APL
 The files ReadCovers/FixCovers are work in progress, with the intention of creating cover-functions in both APLX (for real system functions) and Dyalog APL (for emulation functions), so that the same application code can run on both systems. This will be useful for application which are in active development under APLX while migration work is in progress. This code is not yet working.
 
-##Further Reading
+## Further Reading
 
 See the list and discussion of differences between APLX and Dyalog APL in the file [Differences.md](Differences.md).
 
-##Comments and Questions
+## Comments and Questions
 
 Please send question and comments to [aplx@dyalog.com](mailto:aplx@dyalog.com), or the [Dyalog Forums](http://www.dyalog.com/forum/viewforum.php?f=37), or sign up to GitHub and submit comments and change requests there!
