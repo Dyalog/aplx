@@ -6,9 +6,8 @@ This document lists the emulations provided, the limitations that we are current
 ## Important Differences
 In addition to the emulated features, and language constructs which can be automatically transformed, there are a number of features of APLX which are not supported at all in Dyalog APL, and which we are not currently planning to emulate:
 
-* The `⎕WI` user interface tool is not provided. Under Microsoft Windows, Dyalog APL provides a similar tool called `⎕WC`. An emulator for `⎕WI`, based on `⎕WC`, is available from Joachim Hoffman; an example of an application converted this tool can be found at [http://www.condim.at/download.aspx]().
-   * Dyalog has no plans to provide `⎕WC` on the Mac or Linux, as the UI paradigm that it represents is fundamentally obsolete (this is a major part of the reason why APLX was discontinued). Some users have been successful in running Dyalog for Windows under WINE, but this is not recommended or supported by Dyalog.
-   * Dyalog is working on HTML/Javascript based tools which will provide cross-platform user interfaces for the desktop and as a web server. Contact Dyalog to discuss how you can provide alternative user interfaces in Dyalog APL using WPF, HTML/Javascript or other technologies.
+* The `⎕WI` user interface tool is not provided. Under Microsoft Windows, Dyalog APL provides a similar tool called `⎕WC`. An emulator for `⎕WI`, based on `⎕WC`, is available from Joachim Hoffman; an example of an application converted this tool can be found at [https://condim.at/downloads]().
+   * Dyalog is developing a cross-platform emulator for `⎕WC` , which will work on all platforms and also run as a web server, expected to become available for testing in the 2nd half of 2024.
 
 * `⎕CHART` is not emulated: Dyalog provides SharpPlot and interfaces to Javascript-based charting as alternatives.
 * Object Oriented features in Dyalog are in many ways more powerful than those in APLX, but they are different. There is currently no support for external Java and Ruby objects.
