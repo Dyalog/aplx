@@ -173,7 +173,7 @@
       ⎕IO←1
       :If 1=≡,V ⋄ V←V({(-⊥⍨'.'≠⍵)↑⍵}V) ⋄ :EndIf ⍝ use extension as type if simple string
       file←1⊃V
-      type←819⌶2⊃V ⍝ Lowercase
+      type←{2::0(819⌶)⍵ ⋄ ¯3 ⎕C ⍵}2⊃V ⍝ Lowercase
      
       1 ⎕NDELETE file
      
@@ -276,7 +276,7 @@
     ∇ Z←∆IMPORT V;file;type;⎕IO;M ⍝ Emulate APLX ⎕import
       ⎕IO←1
       :If 1=≡,V ⋄ V←V({(-⊥⍨'.'≠⍵)↑⍵}V) ⋄ :EndIf ⍝ use extension as type if simple string
-      file←1⊃V ⋄ type←819⌶2⊃V ⍝ Lowercase
+      file←1⊃V ⋄ type←{2::0(819⌶)⍵ ⋄ ¯3 ⎕C ⍵}2⊃V ⍝ Lowercase
      
       :Select type
       :Case 'txt'
@@ -558,7 +558,7 @@
          
           if←/⍨                                ⍝ --- local fns ---
           isChar←{0 2∊⍨10|⎕DR 1/⍵}
-          lCase←819⌶
+          lCase←{2::0(819⌶)⍵ ⋄ ¯3 ⎕C ⍵}
          
           ⎕IO←⎕ML←1 ⋄ (NL CR)←⎕TC[2 3]         ⍝ --- local variables ---
           params←,{⊂⍣(1=≡,⍵)⌷⍵}params ⍝ nest if only a filename (string) as argument
