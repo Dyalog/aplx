@@ -522,6 +522,6 @@
     ⍝ Things to watch for:
     ⍝ ⎕CLASSES is (⎕nl-9.4 9.6)
 
-    L←819⌶ ⍝ Lowercase
+    L←⎕C ⍝ Lowercase
 
 :EndNameSpace
